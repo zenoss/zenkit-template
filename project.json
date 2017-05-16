@@ -1,0 +1,7 @@
+{
+  "Package": "github.com/zenoss/helloworld",
+  "Name": "helloworld",
+  "Title": "Hello World Service",
+  "Description": "A sample service to show how the microservice stack works",
+  "Port": "8080"
+}

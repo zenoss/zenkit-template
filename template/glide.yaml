@@ -1,4 +1,4 @@
-package: github.com/zenoss/go-svc
+package: {{Package}}
 import:
 - package: github.com/goadesign/goa
   version: ~1.2.0
