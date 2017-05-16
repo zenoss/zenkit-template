@@ -1,0 +1,6 @@
+package: github.com/zenoss/go-svc
+import:
+- package: github.com/goadesign/goa
+  version: ^1.2.0
+  subpackages:
+  - goagen
