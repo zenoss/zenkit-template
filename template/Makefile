@@ -1,7 +1,7 @@
-GLIDE := $(GOPATH)/bin/glide
-GOAGEN := vendor/github.com/goadesign/goa/goagen/goagen
+GLIDE     := $(GOPATH)/bin/glide
+GOAGEN    := vendor/github.com/goadesign/goa/goagen/goagen
 DESIGNPKG := {{Package}}/design
-DESIGN := $(shell find design -name \*.go)
+DESIGN 	  := $(shell find design -name \*.go)
 
 default: app
 
@@ -16,3 +16,5 @@ $(GOAGEN): glide.lock $(GLIDE)
 
 app: $(DESIGN) | $(GOAGEN)
 	@$(GOAGEN) app -d $(DESIGNPKG)
+	@$(GOAGEN) controller -d $(DESIGNPKG)
+	@$(GOAGEN) swagger -d $(DESIGNPKG)

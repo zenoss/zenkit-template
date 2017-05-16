@@ -1,4 +1,4 @@
-package: {{Package}}
+package: github.com/zenoss/go-svc
 import:
 - package: github.com/goadesign/goa
   version: ~1.2.0
@@ -12,3 +12,4 @@ import:
   subpackages:
     - go/ast/astutil
 - package: gopkg.in/yaml.v2
+- package: github.com/spf13/cobra
