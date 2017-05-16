@@ -1,18 +1,13 @@
-GLIDE := glide
-GLIDE_PATH := $(shell command -v $(GLIDE) 2> /dev/null)
-GOAGEN := ./vendor/github.com/goadesign/goa/goagen/goagen
+GLIDE := $(GOPATH)/bin/glide
+GOAGEN := vendor/github.com/goadesign/goa/goagen/goagen
 
 default: $(GOAGEN)
 
-.PHONY: $(GLIDE)
 $(GLIDE):
-ifndef GLIDE_PATH
-	curl https://glide.sh/get | sh
-endif
+	@curl https://glide.sh/get | sh
 
 glide.lock: $(GLIDE)
-	$(GLIDE) install
+	@$(GLIDE) up
 
 $(GOAGEN): glide.lock $(GLIDE)
-	$(GLIDE) up
-	cd $(@D) && go build
+	@cd $(@D) && go build
