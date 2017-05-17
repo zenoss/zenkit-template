@@ -1,7 +1,11 @@
 package cmd
 
 import (
+	"fmt"
+
+	"github.com/Sirupsen/logrus"
 	"github.com/goadesign/goa"
+	goalogrus "github.com/goadesign/goa/logging/logrus"
 	"github.com/goadesign/goa/middleware"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -13,6 +17,9 @@ var serverCmd = &cobra.Command{
 	Short: "Run the {{Name}} server",
 	Run: func(cmd *cobra.Command, args []string) {
 		service := goa.New("{{Name}}")
+
+		logger := logrus.New()
+		service.WithLogger(goalogrus.New(logger))
 
 		service.Use(middleware.RequestID())
 		service.Use(middleware.LogRequest(true))
@@ -30,5 +37,5 @@ func init() {
 
 	serverCmd.PersistentFlags().IntP("port", "p", 8080, "Port to which the server should bind")
 	viper.BindPFlag("port", serverCmd.PersistentFlags().Lookup("port"))
-	viper.SetDefault("port", {{Port}})
+	viper.SetDefault("port", "{{Port}}")
 }
