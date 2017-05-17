@@ -1,9 +1,10 @@
 package cmd
 
 import (
-	"fmt"
-
+	"github.com/goadesign/goa"
+	"github.com/goadesign/goa/middleware"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // serverCmd represents the server command
@@ -11,20 +12,23 @@ var serverCmd = &cobra.Command{
 	Use:   "server",
 	Short: "Run the {{Name}} server",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("server called")
+		service := goa.New("{{Name}}")
+
+		service.Use(middleware.RequestID())
+		service.Use(middleware.LogRequest(true))
+		service.Use(middleware.ErrorHandler(service, true))
+		service.Use(middleware.Recover())
+
+		if err := service.ListenAndServe(fmt.Sprintf(":%d", viper.GetInt("port"))); err != nil {
+			service.LogError("startup", "err", err)
+		}
 	},
 }
 
 func init() {
 	RootCmd.AddCommand(serverCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// serverCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// serverCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	serverCmd.PersistentFlags().IntP("port", "p", 8080, "Port to which the server should bind")
+	viper.BindPFlag("port", serverCmd.PersistentFlags().Lookup("port"))
+	viper.SetDefault("port", {{Port}})
 }
