@@ -1,30 +1,39 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/Sirupsen/logrus"
-	"github.com/goadesign/goa"
+	"github.com/fsnotify/fsnotify"
 	goalogrus "github.com/goadesign/goa/logging/logrus"
-	"github.com/goadesign/goa/middleware"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/zenoss/zenkit"
 )
+
+func Logger(ctx context.Context) *logrus.Entry {
+	return goalogrus.Entry(ctx)
+}
 
 // serverCmd represents the server command
 var serverCmd = &cobra.Command{
 	Use:   "server",
 	Short: "Run the {{Name}} server",
 	Run: func(cmd *cobra.Command, args []string) {
-		service := goa.New("{{Name}}")
 
-		logger := logrus.New()
-		service.WithLogger(goalogrus.New(logger))
+		// Create a new service with default middleware
+		service := zenkit.NewService("{{Name}}")
 
-		service.Use(middleware.RequestID())
-		service.Use(middleware.LogRequest(true))
-		service.Use(middleware.ErrorHandler(service, true))
-		service.Use(middleware.Recover())
+		// Set the initial log verbosity
+		zenkit.SetVerbosity(service, verbosity)
+
+		// Start watching the config file
+		go viper.WatchConfig()
+		viper.OnConfigChange(func(in fsnotify.Event) {
+			// Update the log verbosity
+			zenkit.SetVerbosity(service, verbosity)
+		})
 
 		if err := service.ListenAndServe(fmt.Sprintf(":%d", viper.GetInt("port"))); err != nil {
 			service.LogError("startup", "err", err)
