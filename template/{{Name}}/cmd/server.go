@@ -3,12 +3,15 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"time"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/fsnotify/fsnotify"
 	goalogrus "github.com/goadesign/goa/logging/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/tylerb/graceful"
 	"github.com/zenoss/zenkit"
 )
 
@@ -35,9 +38,15 @@ var serverCmd = &cobra.Command{
 			zenkit.SetVerbosity(service, verbosity)
 		})
 
-		if err := service.ListenAndServe(fmt.Sprintf(":%d", viper.GetInt("port"))); err != nil {
-			service.LogError("startup", "err", err)
+		server := &graceful.Server{
+			Timeout: time.Duration(15) * time.Second,
+			Server: &http.Server{
+				Addr:    fmt.Sprintf(":%d", viper.GetInt("port")),
+				Handler: service.Mux,
+			},
 		}
+
+		logrus.WithError(server.ListenAndServe()).Fatal("Server shutdown")
 	},
 }
 
