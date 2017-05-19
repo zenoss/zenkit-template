@@ -1,6 +1,4 @@
 version: "3"
 services:
   {{Name}}:
-      build: .
-      expose:
-        - {{Port}}
+      image: zenoss/{{Name}}-svc

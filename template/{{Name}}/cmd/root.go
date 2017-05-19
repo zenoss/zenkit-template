@@ -32,6 +32,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is /etc/{{Name}}.conf)")
 	RootCmd.PersistentFlags().CountVarP(&verbosity, "verbosity", "v", "Log verbosity")
+	viper.BindPFlag("verbosity", RootCmd.PersistentFlags().Lookup("verbosity"))
 }
 
 // initConfig reads in config file and ENV variables if set.
