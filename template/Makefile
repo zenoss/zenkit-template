@@ -15,6 +15,7 @@ $(GOAGEN): glide.lock $(GLIDE)
 	@cd $(@D) && go build
 
 app: $(DESIGN) | $(GOAGEN)
+	@$(GOAGEN) gen -o resources --pkg-path=github.com/zenoss/zenkit/generate -d $(DESIGNPKG)
 	@$(GOAGEN) app -o resources -d $(DESIGNPKG)
 	@$(GOAGEN) controller --pkg resources -o resources -d $(DESIGNPKG)
 	@$(GOAGEN) swagger -d $(DESIGNPKG)

@@ -13,6 +13,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/tylerb/graceful"
 	"github.com/zenoss/zenkit"
+	"{{Package}}/resources"
 )
 
 func Logger(ctx context.Context) *logrus.Entry {
@@ -37,6 +38,8 @@ var serverCmd = &cobra.Command{
 			// Update the log verbosity
 			zenkit.SetVerbosity(service, verbosity)
 		})
+
+		resources.MountAllControllers(service)
 
 		server := &graceful.Server{
 			Timeout: time.Duration(15) * time.Second,
