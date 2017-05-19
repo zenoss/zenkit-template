@@ -2,6 +2,8 @@
   "Package": "github.com/zenoss/helloworld",
   "Name": "helloworld",
   "Title": "Hello World Service",
+  "DockerHubOwner": "zenoss",
+  "DockerHubRepo": "helloworld-svc",
   "Description": "A sample service to show how the microservice stack works",
   "Port": "8080"
 }
