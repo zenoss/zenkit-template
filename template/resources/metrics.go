@@ -19,9 +19,9 @@ func NewMetricsController(service *goa.Service) *MetricsController {
 	return &MetricsController{Controller: service.NewController("MetricsController")}
 }
 
-// GetMetrics runs the getMetrics action.
-func (c *MetricsController) GetMetrics(ctx *app.GetMetricsMetricsContext) error {
-	// MetricsController_GetMetrics: start_implement
+// Metrics runs the metrics action.
+func (c *MetricsController) Metrics(ctx *app.MetricsMetricsContext) error {
+	// MetricsController_Metrics: start_implement
 	registry := zenkit.ContextMetrics(ctx)
 	if registry == nil {
 		// No registry was registered; must not be using metrics middleware.
@@ -34,6 +34,13 @@ func (c *MetricsController) GetMetrics(ctx *app.GetMetricsMetricsContext) error 
 	if err := encoder.Encode(registry); err != nil {
 		return err
 	}
-	// MetricsController_GetMetrics: end_implement
+	// MetricsController_Metrics: end_implement
+	return nil
+}
+
+// Ping runs the ping action.
+func (c *MetricsController) Ping(ctx *app.PingMetricsContext) error {
+	// MetricsController_Ping: start_implement
+	// MetricsController_Ping: end_implement
 	return nil
 }
