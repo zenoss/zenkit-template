@@ -1,7 +1,7 @@
 FROM golang:1.8.1-alpine
 
-COPY . /go/src/{{Package}}
-WORKDIR /go/src/{{Package}}/{{Name}}
+COPY . /go/src/{{PackageOwner}}/{{Name}}
+WORKDIR /go/src/{{PackageOwner}}/{{Name}}/{{Name}}
 RUN go build -o /bin/{{Name}}
 
 FROM alpine

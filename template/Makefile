@@ -1,6 +1,6 @@
 GLIDE     := $(GOPATH)/bin/glide
 GOAGEN    := vendor/github.com/goadesign/goa/goagen/goagen
-DESIGNPKG := {{Package}}/design
+DESIGNPKG := {{PackageOwner}}/{{Name}}/design
 DESIGN 	  := $(shell find design -name \*.go)
 
 default: app

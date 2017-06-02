@@ -13,7 +13,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/tylerb/graceful"
 	"github.com/zenoss/zenkit"
-	"{{Package}}/resources"
+	"{{PackageOwner}}/{{Name}}/resources"
 )
 
 func Logger(ctx context.Context) *logrus.Entry {

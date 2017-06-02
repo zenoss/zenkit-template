@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/goadesign/goa"
-	"{{Package}}/resources/app"
+	"{{PackageOwner}}/{{Name}}/resources/app"
 	"github.com/zenoss/zenkit"
 )
 
