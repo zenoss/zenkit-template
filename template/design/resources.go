@@ -6,10 +6,20 @@ import (
 )
 
 var _ = Resource("metrics", func() {
-	BasePath("/_metrics")
-	Action("getMetrics", func() {
+	BasePath("/")
+	Action("ping", func() {
+		Description("Respond with a 200 if the service is available")
+		Routing(GET("_ping"))
+		Response(OK)
+	})
+	Action("metrics", func() {
 		Description("Return a snapshot of metrics")
-		Routing(GET("/"))
+		Routing(GET("_metrics"))
+		Params(func() {
+			Param("pretty", Boolean, "Indent resulting JSON", func() {
+				Default(true)
+			})
+		})
 		Response(OK, "application/json")
 	})
 })

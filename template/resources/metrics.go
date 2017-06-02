@@ -27,10 +27,13 @@ func (c *MetricsController) GetMetrics(ctx *app.GetMetricsMetricsContext) error 
 		// No registry was registered; must not be using metrics middleware.
 		return ctx.OK([]byte("{}"))
 	}
-	if err := json.NewEncoder(ctx.ResponseData).Encode(registry); err != nil {
+	encoder := json.NewEncoder(ctx.ResponseData)
+	if ctx.Pretty {
+		encoder.SetIndent("", "    ")
+	}
+	if err := encoder.Encode(registry); err != nil {
 		return err
 	}
-	return ctx.OK([]byte{})
 	// MetricsController_GetMetrics: end_implement
 	return nil
 }
