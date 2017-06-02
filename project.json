@@ -1,5 +1,4 @@
 {
-  "PackageOwner": "github.com/zenoss",
   "Name": "helloworld",
   "Title": "Hello World Service",
   "Description": "A sample service to show how the microservice stack works",

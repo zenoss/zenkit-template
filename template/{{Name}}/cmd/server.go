@@ -1,3 +1,4 @@
+{{ $pkg := print ((print (env "GOPATH") "/src/") | trimPrefix (env "PWD")) "/" Name -}}
 package cmd
 
 import (
@@ -13,7 +14,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/tylerb/graceful"
 	"github.com/zenoss/zenkit"
-	"{{PackageOwner}}/{{Name}}/resources"
+	"{{$pkg}}/resources"
 )
 
 func Logger(ctx context.Context) *logrus.Entry {

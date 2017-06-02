@@ -1,6 +1,7 @@
+{{ $pkg := print ((print (env "GOPATH") "/src/") | trimPrefix (env "PWD")) "/" Name -}}
 GLIDE     := $(GOPATH)/bin/glide
 GOAGEN    := vendor/github.com/goadesign/goa/goagen/goagen
-DESIGNPKG := {{PackageOwner}}/{{Name}}/design
+DESIGNPKG := {{$pkg}}/design
 DESIGN 	  := $(shell find design -name \*.go)
 
 default: app

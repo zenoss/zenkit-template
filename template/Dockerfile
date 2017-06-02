@@ -1,7 +1,8 @@
-FROM golang:1.8.1-alpine
+{{ $pkg := print ((print (env "GOPATH") "/src/") | trimPrefix (env "PWD")) "/" Name -}}
+FROM golang:1.8.3-alpine
 
-COPY . /go/src/{{PackageOwner}}/{{Name}}
-WORKDIR /go/src/{{PackageOwner}}/{{Name}}/{{Name}}
+COPY . /go/src/{{$pkg}}
+WORKDIR /go/src/{{$pkg}}/{{Name}}
 RUN go build -o /bin/{{Name}}
 
 FROM alpine

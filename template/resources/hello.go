@@ -1,3 +1,4 @@
+{{ $pkg := print ((print (env "GOPATH") "/src/") | trimPrefix (env "PWD")) "/" Name -}}
 package resources
 
 import (
@@ -5,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/goadesign/goa"
-	"{{PackageOwner}}/{{Name}}/resources/app"
+	"{{$pkg}}/resources/app"
 	"github.com/zenoss/zenkit"
 )
 
