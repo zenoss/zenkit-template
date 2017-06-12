@@ -10,7 +10,7 @@ GIT_FLOW 			 := $(shell git flow version &>/dev/null && echo git flow)
 DOCKER_COMPOSE_VERSION := 1.13.0
 
 .PHONY: default
-default: init app
+default: app init
 
 .PHONY: docker-compose
 docker-compose: $(DOCKER_COMPOSE)
@@ -57,7 +57,7 @@ build: glide.lock $(DOCKER_COMPOSE)
 
 .PHONY: test
 test: app $(GINKGO)
-	@$(GINKGO) -r
+	@$(GINKGO) -r -race -cover -skipPackage=vendor
 
 .PHONY: clean
 clean:
