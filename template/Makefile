@@ -5,11 +5,12 @@ GOAGEN               := vendor/github.com/goadesign/goa/goagen/goagen
 DESIGNPKG            := {{$pkg}}/design
 DESIGN 	             := $(shell find design -name \*.go)
 DOCKER_COMPOSE       := /usr/local/bin/docker-compose
+GIT_FLOW 			 := $(shell git flow version &>/dev/null && echo git flow)
 
 DOCKER_COMPOSE_VERSION := 1.13.0
 
 .PHONY: default
-default: app run
+default: init app
 
 .PHONY: docker-compose
 docker-compose: $(DOCKER_COMPOSE)
@@ -72,3 +73,14 @@ clean:
 mrclean: clean
 	rm -rf glide.lock
 	rm -rf vendor
+
+.git:
+ifndef GIT_FLOW
+	@echo 'No git flow found. Please run "sudo apt install -y git-flow" to install it.'; exit 2
+endif
+	@git init
+	@git add .; git commit -m "Initial commit"
+	@git flow init -d
+
+.PHONY: init
+init: .git
