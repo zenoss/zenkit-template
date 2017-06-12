@@ -57,7 +57,7 @@ var serverCmd = &cobra.Command{
 func init() {
 	RootCmd.AddCommand(serverCmd)
 
-	serverCmd.PersistentFlags().IntP("port", "p", 8080, "Port to which the server should bind")
+	serverCmd.PersistentFlags().IntP("port", "p", {{Port}}, "Port to which the server should bind")
 	viper.BindPFlag("port", serverCmd.PersistentFlags().Lookup("port"))
 	viper.SetDefault("port", "{{Port}}")
 }
