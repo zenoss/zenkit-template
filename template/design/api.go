@@ -10,4 +10,6 @@ var _ = API("{{Name}}", func() {
 	Description("{{Description}}")
 	Scheme("http")
 	Host("localhost:{{Port}}")
+	Consumes("application/json")
+	Produces("application/json")
 })

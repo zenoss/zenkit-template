@@ -51,13 +51,9 @@ app: swagger/swagger.json resources/controller_reg.go resources/metrics.go resou
 run: glide.lock $(DOCKER_COMPOSE)
 	@$(DOCKER_COMPOSE) up
 
-.PHONY: start
-start: glide.lock $(DOCKER_COMPOSE)
-	@$(DOCKER_COMPOSE) up -d
-
-.PHONY: refresh
-refresh: glide.lock $(DOCKER_COMPOSE)
-	@$(DOCKER_COMPOSE) up -d --build --no-deps {{Name}}
+.PHONY: build
+build: glide.lock $(DOCKER_COMPOSE)
+	@$(DOCKER_COMPOSE) build {{Name}}
 
 .PHONY: test
 test: app $(GINKGO)
@@ -85,6 +81,3 @@ endif
 .PHONY: init
 init: .git
 
-.PHONY: build
-build: $(DOCKER_COMPOSE)
-	@$(DOCKER_COMPOSE) build {{Name}}
