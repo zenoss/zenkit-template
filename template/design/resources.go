@@ -35,7 +35,17 @@ var _ = Resource("hello", func() {
 		Params(func() {
 			Param("name", String, "User name")
 		})
-		Response(OK)
+		Response(OK, Greeting)
 		Response(BadRequest)
+	})
+})
+
+var Greeting = MediaType("vnd.application/{{Name}}.greeting", func() {
+	Description("The result of saying hello")
+	Attributes(func() {
+		Attribute("greeting", String, "The greeting")
+	})
+	View("default", func() {
+		Attribute("greeting")
 	})
 })

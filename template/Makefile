@@ -1,5 +1,6 @@
 {{ $pkg := print ((print (env "GOPATH") "/src/") | trimPrefix (env "PWD")) "/" Name -}}
 GLIDE                := $(GOPATH)/bin/glide
+GINKGO               := $(GOPATH)/bin/ginkgo
 GOAGEN               := vendor/github.com/goadesign/goa/goagen/goagen
 DESIGNPKG            := {{$pkg}}/design
 DESIGN 	             := $(shell find design -name \*.go)
@@ -20,6 +21,9 @@ $(DOCKER_COMPOSE):
 
 $(GLIDE):
 	@curl https://glide.sh/get | sh
+
+$(GINKGO):
+	@go get -u github.com/onsi/ginkgo/ginkgo
 
 glide.lock: $(GLIDE)
 	@$(GLIDE) up
@@ -42,14 +46,21 @@ resources/%.go: $(DESIGN) | $(GOAGEN)
 .PHONY: app
 app: swagger/swagger.json resources/controller_reg.go resources/metrics.go resources/app/controllers.go
 
+.PHONY: run
 run: glide.lock $(DOCKER_COMPOSE)
 	@$(DOCKER_COMPOSE) up
 
+.PHONY: start
 start: glide.lock $(DOCKER_COMPOSE)
 	@$(DOCKER_COMPOSE) up -d
 
+.PHONY: refresh
 refresh: glide.lock $(DOCKER_COMPOSE)
 	@$(DOCKER_COMPOSE) up -d --build --no-deps {{Name}}
+
+.PHONY: test
+test: app $(GINKGO)
+	@$(GINKGO) -r
 
 .PHONY: clean
 clean:

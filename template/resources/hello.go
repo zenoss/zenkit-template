@@ -29,7 +29,9 @@ func (c *HelloController) Sayhello(ctx *app.SayhelloHelloContext) error {
 		return ctx.BadRequest()
 	}
 	result := fmt.Sprintf("Hello, %s!", ctx.Name)
-	return ctx.OK([]byte(result))
+	return ctx.OK(&app.{{Name | title}}Greeting{Greeting: &result})
+
 	// HelloController_Sayhello: end_implement
-	return nil
+	res := &app.{{Name | title}}Greeting{}
+	return ctx.OK(res)
 }
