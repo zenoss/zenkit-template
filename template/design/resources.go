@@ -40,10 +40,11 @@ var _ = Resource("hello", func() {
 	})
 })
 
-var Greeting = MediaType("vnd.application/{{Name}}.greeting", func() {
+var Greeting = MediaType("vnd.application/{{Name}}.greeting+json", func() {
 	Description("The result of saying hello")
 	Attributes(func() {
 		Attribute("greeting", String, "The greeting")
+		Required("greeting")
 	})
 	View("default", func() {
 		Attribute("greeting")

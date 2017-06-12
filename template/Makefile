@@ -64,6 +64,7 @@ clean:
 	rm -f resources/controller_reg.go
 	rm -rf resources/app
 	rm -rf swagger
+	$(DOCKER_COMPOSE) down {{Name}}
 
 .PHONY: mrclean
 mrclean: clean
