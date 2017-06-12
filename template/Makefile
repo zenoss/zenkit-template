@@ -1,6 +1,7 @@
 {{ $pkg := print ((print (env "GOPATH") "/src/") | trimPrefix (env "PWD")) "/" Name -}}
 GLIDE                := $(GOPATH)/bin/glide
 GINKGO               := $(GOPATH)/bin/ginkgo
+GO_BINDATA           := $(GOPATH)/bin/go-bindata
 GOAGEN               := vendor/github.com/goadesign/goa/goagen/goagen
 DESIGNPKG            := {{$pkg}}/design
 DESIGN 	             := $(shell find design -name \*.go)
@@ -26,14 +27,18 @@ $(GLIDE):
 $(GINKGO):
 	@go get -u github.com/onsi/ginkgo/ginkgo
 
+$(GO_BINDATA):
+	@go get -u github.com/jteeuwen/go-bindata/go-bindata
+
 glide.lock: $(GLIDE)
 	@$(GLIDE) up
 
 $(GOAGEN): glide.lock $(GLIDE)
 	@cd $(@D) && go build
 
-swagger/swagger.%: $(DESIGN) | $(GOAGEN)
+swagger/swagger.go: $(DESIGN) | $(GOAGEN) $(GO_BINDATA)
 	@$(GOAGEN) swagger -d $(DESIGNPKG)
+	@$(GO_BINDATA) -ignore='swagger\.go' -pkg swagger -o $@ swagger/
 
 resources/controller_reg.go: $(DESIGN) | $(GOAGEN)
 	@$(GOAGEN) gen -o resources --pkg-path=github.com/zenoss/zenkit/generate -d $(DESIGNPKG)
@@ -45,7 +50,7 @@ resources/%.go: $(DESIGN) | $(GOAGEN)
 	@$(GOAGEN) controller --regen --pkg resources -o resources -d $(DESIGNPKG)
 
 .PHONY: app
-app: swagger/swagger.json resources/controller_reg.go resources/metrics.go resources/app/controllers.go
+app: swagger/swagger.go resources/controller_reg.go resources/metrics.go resources/app/controllers.go
 
 .PHONY: run
 run: glide.lock $(DOCKER_COMPOSE)
