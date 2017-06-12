@@ -21,3 +21,5 @@ import:
 - package: github.com/zenoss/zenkit
 - package: github.com/tylerb/graceful
 - package: github.com/rcrowley/go-metrics
+- package: github.com/onsi/ginkgo
+- package: github.com/onsi/gomega
