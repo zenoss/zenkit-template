@@ -49,7 +49,7 @@ app: swagger/swagger.json resources/controller_reg.go resources/metrics.go resou
 
 .PHONY: run
 run: glide.lock $(DOCKER_COMPOSE)
-	@$(DOCKER_COMPOSE) up
+	@$(DOCKER_COMPOSE) up --build
 
 .PHONY: build
 build: glide.lock $(DOCKER_COMPOSE)

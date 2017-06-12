@@ -32,7 +32,7 @@ var _ = Describe("Hello", func() {
 			expected = fmt.Sprintf("Hello, %s!", name)
 		)
 		_, greeting := test.SayhelloHelloOK(t, ctx, svc, ctrl, name)
-		Ω(*greeting.Greeting).Should(Equal(expected))
+		Ω(greeting.Greeting).Should(Equal(expected))
 	})
 
 	It("should not say hello to Newman", func() {
