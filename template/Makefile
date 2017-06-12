@@ -84,3 +84,7 @@ endif
 
 .PHONY: init
 init: .git
+
+.PHONY: build
+build: $(DOCKER_COMPOSE)
+	@$(DOCKER_COMPOSE) build {{Name}}

@@ -1,6 +1,13 @@
 # {{Title}} ({{Name}})
 {{Description}}
 
+## tl;dr
+* _`make`_ to regenerate code after changes to the API
+* _`make run`_ to run the service using docker-compose
+* _`make test`_ to run tests
+* _`make build`_ to build the image `zenoss/zing-{{Name}}:dev`
+* _`glide up`_ to update dependencies
+
 ## What's Inside
 This microservice comprises:
 * [Cobra](https://github.com/spf13/cobra) for CLI. Cobra files live under the
@@ -65,9 +72,9 @@ Additional helpful utilities include:
    automatically on save by running `ginkgo watch resources` or `ginkgo watch
    -r`.
 
-6. `make restart` to rebuild the image and redeploy the service locally. This
-   will bring it up on port {{Port}}, allowing you to use `curl` or `httpie`.
-   You may also simply use `go build {{Name}}`, then run the resulting binary
+6. `make run` to rebuild the image and redeploy the service locally. This will
+   bring it up on port {{Port}}, allowing you to use `curl` or `httpie`.  You
+   may also simply use `go build {{Name}}`, then run the resulting binary
    manually, although if supporting services are required, the `docker-compose`
    functionality the Makefile implements is very convenient.
 
@@ -75,31 +82,11 @@ Additional helpful utilities include:
 
 
 ## Building for production
-The only artifact this produces is the Docker image `zenoss/{{Name}}`. It will
+The only artifact this produces is the Docker image `zenoss/zing-{{Name}}`. It will
 be pushed to Amazon ECR automatically by our build system once changes have
 been verified.
-
 
 ## Environment Variables
 <aside class="notice">Add to this list as configuration is added</aside>
 * `{{Name | toUpper}}_PORT`: {{Port}}
 
-Git Repo: zenoss/zing-{{Name}}
-* develop is default branch
-* Can't push to master or whatever
-* Tests are required
-* Permissions are not wrong
-* git flow init -d
-* Dockerfile
-* docker-compose.yml (optional)
-* Makefile
- * make test
- * make build
- * make run
- * make clean
-* README with config documented
-* Swagger spec
-* Runbook template
-Docker Repo: zenoss/zing-{{Name}}
-Jenkins - test
-Jenkins - build
