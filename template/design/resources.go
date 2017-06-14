@@ -31,6 +31,11 @@ var _ = Resource("swagger", func() {
 		Routing(GET("swagger.json"))
 		Response(OK, "application/json")
 	})
+	Action("redoc", func() {
+		Description("Display Swagger using ReDoc")
+		Routing(GET("/"))
+		Response(OK, "text/html")
+	})
 })
 
 // This exists for example purposes only.

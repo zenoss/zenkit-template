@@ -28,3 +28,28 @@ func (c *SwaggerController) JSON(ctx *app.JSONSwaggerContext) error {
 	// SwaggerController_JSON: end_implement
 	return nil
 }
+
+// Redoc runs the redoc action.
+func (c *SwaggerController) Redoc(ctx *app.RedocSwaggerContext) error {
+	// SwaggerController_Redoc: start_implement
+	return ctx.OK([]byte(`<!DOCTYPE html
+<html>
+  <head>
+    <title>{{Description}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <redoc spec-url='/_swagger/swagger.json'></redoc>
+    <script src="https://rebilly.github.io/ReDoc/releases/latest/redoc.min.js"> </script>
+  </body>
+</html>
+`))
+	// SwaggerController_Redoc: end_implement
+	return nil
+}
