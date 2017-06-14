@@ -24,6 +24,15 @@ var _ = Resource("metrics", func() {
 	})
 })
 
+var _ = Resource("swagger", func() {
+	BasePath("/_swagger")
+	Action("json", func() {
+		Description("Retrieve Swagger spec as JSON")
+		Routing(GET("swagger.json"))
+		Response(OK, "application/json")
+	})
+})
+
 // This exists for example purposes only.
 // Please see https://goa.design/learn/guide to get started.
 // Full DSL docs can be found at https://goa.design/reference/goa/design/apidsl/.
