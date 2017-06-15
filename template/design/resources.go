@@ -5,39 +5,6 @@ import (
 	. "github.com/goadesign/goa/design/apidsl"
 )
 
-var _ = Resource("metrics", func() {
-	BasePath("/")
-	Action("ping", func() {
-		Description("Respond with a 200 if the service is available")
-		Routing(GET("_ping"))
-		Response(OK)
-	})
-	Action("metrics", func() {
-		Description("Return a snapshot of metrics")
-		Routing(GET("_metrics"))
-		Params(func() {
-			Param("pretty", Boolean, "Indent resulting JSON", func() {
-				Default(true)
-			})
-		})
-		Response(OK, "application/json")
-	})
-})
-
-var _ = Resource("swagger", func() {
-	BasePath("/_swagger")
-	Action("json", func() {
-		Description("Retrieve Swagger spec as JSON")
-		Routing(GET("swagger.json"))
-		Response(OK, "application/json")
-	})
-	Action("redoc", func() {
-		Description("Display Swagger using ReDoc")
-		Routing(GET("/"))
-		Response(OK, "text/html")
-	})
-})
-
 // This exists for example purposes only.
 // Please see https://goa.design/learn/guide to get started.
 // Full DSL docs can be found at https://goa.design/reference/goa/design/apidsl/.
