@@ -53,12 +53,8 @@ func (c *AdminController) Swagger(ctx *app.SwaggerAdminContext) error {
 	return ctx.OK([]byte(`<!DOCTYPE html
 <html>
   <head>
-    <title>Topo API</title>
-    <!-- needed for adaptive design -->
+    <title>{{Name | title}} API</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--
-    ReDoc doesn't change outer page styles
-    -->
     <style>
       body {
         margin: 0;
