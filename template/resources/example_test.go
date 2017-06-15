@@ -13,13 +13,13 @@ import (
 	"{{$pkg}}/resources/app/test"
 )
 
-var _ = Describe("Hello", func() {
+var _ = Describe("Example", func() {
 
 	var (
 		t    = GinkgoT()
 		ctx  context.Context
-		svc  = goa.New("hello-test")
-		ctrl = NewHelloController(svc)
+		svc  = goa.New("example-test")
+		ctrl = NewExampleController(svc)
 	)
 
 	BeforeEach(func() {
@@ -31,13 +31,13 @@ var _ = Describe("Hello", func() {
 			name     = "tester"
 			expected = fmt.Sprintf("Hello, %s!", name)
 		)
-		_, greeting := test.SayhelloHelloOK(t, ctx, svc, ctrl, name)
+		_, greeting := test.GreetExampleOK(t, ctx, svc, ctrl, name)
 		Ω(greeting.Greeting).Should(Equal(expected))
 	})
 
 	It("should not say hello to Newman", func() {
 		var name = "newman"
-		test.SayhelloHelloBadRequest(t, ctx, svc, ctrl, name)
+		test.GreetExampleBadRequest(t, ctx, svc, ctrl, name)
 	})
 
 })
