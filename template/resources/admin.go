@@ -42,7 +42,7 @@ func (c *AdminController) Metrics(ctx *app.MetricsAdminContext) error {
 // Ping runs the ping action.
 func (c *AdminController) Ping(ctx *app.PingAdminContext) error {
 	// AdminController_Ping: start_implement
-	return ctx.OK([]byte{`PONG`})
+	return ctx.OK([]byte(`PONG`))
 	// AdminController_Ping: end_implement
 	return nil
 }
