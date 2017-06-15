@@ -1,1 +1,3 @@
-port: {{Port}}
+# {{Name}} config file
+http:
+  port: {{Port}}

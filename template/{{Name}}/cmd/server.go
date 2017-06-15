@@ -45,7 +45,7 @@ var serverCmd = &cobra.Command{
 		server := &graceful.Server{
 			Timeout: time.Duration(15) * time.Second,
 			Server: &http.Server{
-				Addr:    fmt.Sprintf(":%d", viper.GetInt("port")),
+				Addr:    fmt.Sprintf(":%d", viper.GetInt("http.port")),
 				Handler: service.Mux,
 			},
 		}
@@ -57,7 +57,7 @@ var serverCmd = &cobra.Command{
 func init() {
 	RootCmd.AddCommand(serverCmd)
 
-	serverCmd.PersistentFlags().IntP("port", "p", {{Port}}, "Port to which the server should bind")
-	viper.BindPFlag("port", serverCmd.PersistentFlags().Lookup("port"))
-	viper.SetDefault("port", "{{Port}}")
+    serverCmd.PersistentFlags().IntP("http-port", "p", {{Port}}, "Port to which the server should bind")
+    viper.BindPFlag("http.port", serverCmd.PersistentFlags().Lookup("http-port"))
+    viper.SetDefault("http.port", "{{Port}}")
 }
