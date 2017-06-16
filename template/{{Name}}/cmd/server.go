@@ -36,13 +36,13 @@ var serverCmd = &cobra.Command{
 		var key []byte
 		filename := viper.GetString("auth.key_file")
 		readKey := func() error {
-				data, err := afero.ReadFile(fs, filename)
-				if err != nil {
-						logrus.WithError(err).WithField("keyfile", filename).Info("Unable to load auth key. Retrying.")
-						return err
-				}
-				key = data
-				return nil
+			data, err := afero.ReadFile(fs, filename)
+			if err != nil {
+					logrus.WithError(err).WithField("keyfile", filename).Info("Unable to load auth key. Retrying.")
+					return err
+			}
+			key = data
+			return nil
 		}
 		// Docker sometimes doesn't mount the secret right away, so we'll do a short retry
 		boff := backoff.NewExponentialBackOff()
@@ -78,7 +78,16 @@ var serverCmd = &cobra.Command{
 			},
 		}
 
-		logrus.WithError(server.ListenAndServe()).Fatal("Server shutdown")
+		go func() {
+			if err := server.ListenAndServe(); err != nil {
+				logrus.WithError(err).Fatal("Server shut down")
+			}
+		}()
+		logrus.WithField("address", server.Addr).Info("Server started")
+
+		// Wait for the server to exit
+		<-server.StopChan()
+		logrus.Info("Goodbye")
 	},
 }
 
@@ -89,7 +98,7 @@ func init() {
 	viper.BindPFlag("http.port", serverCmd.PersistentFlags().Lookup("http-port"))
 	viper.SetDefault("http.port", "{{Port}}")
 
-	serverCmd.PersistentFlags().String("key-file", "", "File containing authentication signing key")
+	serverCmd.PersistentFlags().String("key-file", "", "File containing authentication verification key")
 	viper.BindPFlag("auth.key_file", serverCmd.PersistentFlags().Lookup("key-file"))
 	viper.SetDefault("auth.key_file", "")
 }
