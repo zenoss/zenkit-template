@@ -3,9 +3,13 @@ package design
 import (
 	. "github.com/goadesign/goa/design"
 	. "github.com/goadesign/goa/design/apidsl"
+	"github.com/zenoss/zenkit"
 )
 
 var _ = Resource("admin", func() {
+	Security(zenkit.JWT, func() {
+		Scope(zenkit.ScopeAPIAdmin)
+	})
 	BasePath("/_admin")
 	Action("ping", func() {
 		Description("Respond with a 200 if the service is available")

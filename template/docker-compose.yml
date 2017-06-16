@@ -5,3 +5,11 @@ services:
     build: .
     ports:
       - "{{Port}}:{{Port}}"
+    environment:
+      {{Name | toUpper}}_HTTP_PORT: {{Port}}
+      {{Name | toUpper}}_AUTH_KEY_FILE: /run/secrets/auth_key
+    secrets:
+      - auth_key
+secrets:
+  auth_key:
+    file: dev.secret
