@@ -1,3 +1,10 @@
 # {{Name}} config file
+log:
+  level: info
+auth:
+  enabled: true
+  key_file: ""
 http:
   port: {{Port}}
+tracing:
+  enabled: false

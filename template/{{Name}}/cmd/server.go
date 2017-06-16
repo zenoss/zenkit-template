@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/Sirupsen/logrus"
-	"github.com/cenkalti/backoff"
 	"github.com/fsnotify/fsnotify"
 	goalogrus "github.com/goadesign/goa/logging/logrus"
 	"github.com/spf13/afero"
@@ -32,25 +31,6 @@ var serverCmd = &cobra.Command{
 	Short: "Run the {{Name}} server",
 	Run: func(cmd *cobra.Command, args []string) {
 
-		// Get the secret key
-		var key []byte
-		filename := viper.GetString("auth.key_file")
-		readKey := func() error {
-			data, err := afero.ReadFile(fs, filename)
-			if err != nil {
-					logrus.WithError(err).WithField("keyfile", filename).Info("Unable to load auth key. Retrying.")
-					return err
-			}
-			key = data
-			return nil
-		}
-		// Docker sometimes doesn't mount the secret right away, so we'll do a short retry
-		boff := backoff.NewExponentialBackOff()
-		boff.MaxElapsedTime = 10 * time.Second
-		if err := backoff.Retry(readKey, boff); err != nil {
-			logrus.WithError(err).Fatal("Unable to load auth verification key")
-		}
-
 		// Create a new service with default middleware
 		service := zenkit.NewService("{{Name}}")
 
@@ -58,8 +38,19 @@ var serverCmd = &cobra.Command{
 		zenkit.SetLogLevel(service, viper.GetString("log.level"))
 
 		// Add security
-		secMW := zenkit.JWTMiddleware(key, zenkit.DefaultJWTValidation, app.NewJWTSecurity())
+		filename := viper.GetString("auth.key_file")
+		secMW, err := zenkit.JWTMiddleware(service, filename, zenkit.DefaultJWTValidation, app.NewJWTSecurity())
+		if err != nil {
+			logrus.WithError(err).Fatal("Unable to initialize security middleware")
+		}
 		app.UseJWTMiddleware(service, secMW)
+
+		// Add tracing, if enabled
+		if viper.GetBool("tracing.enabled") {
+			if err := zenkit.UseXRayMiddleware(service, viper.GetString("tracing.daemon"), viper.GetInt("tracing.sample_rate")); err != nil {
+				logrus.WithError(err).Fatal("Unable to initialize tracing middleware")
+			}
+		}
 
 		// Start watching the config file
 		go viper.WatchConfig()
@@ -101,4 +92,16 @@ func init() {
 	serverCmd.PersistentFlags().String("key-file", "", "File containing authentication verification key")
 	viper.BindPFlag("auth.key_file", serverCmd.PersistentFlags().Lookup("key-file"))
 	viper.SetDefault("auth.key_file", "")
+
+	serverCmd.PersistentFlags().Bool("trace-enabled", false, "Whether to send trace info to AWS X-Ray")
+	viper.BindPFlag("trace.enabled", serverCmd.PersistentFlags().Lookup("trace-enabled"))
+	viper.SetDefault("trace.enabled", false)
+
+	serverCmd.PersistentFlags().String("trace-daemon", "", "Address of the AWS X-Ray daemon")
+	viper.BindPFlag("trace.daemon", serverCmd.PersistentFlags().Lookup("trace-daemon"))
+	viper.SetDefault("trace.daemon", "")
+
+	serverCmd.PersistentFlags().Int("trace-sample-rate", 100, "Rate at which tracing should sample requests")
+	viper.BindPFlag("trace.sample_rate", serverCmd.PersistentFlags().Lookup("trace-sample-rate"))
+	viper.SetDefault("trace.sample_rate", 100)
 }
