@@ -9,10 +9,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var (
-	cfgFile   string
-	verbosity int
-)
+var cfgFile string
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -32,8 +29,9 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is /etc/{{Name}}.conf)")
-	RootCmd.PersistentFlags().CountVarP(&verbosity, "verbosity", "v", "Log verbosity")
-	viper.BindPFlag("verbosity", RootCmd.PersistentFlags().Lookup("verbosity"))
+	RootCmd.PersistentFlags().StringP("log-level", "v", "info", "Log level")
+	viper.BindPFlag("log.level", RootCmd.PersistentFlags().Lookup("log-level"))
+	viper.SetDefault("log.level", "info")
 }
 
 // initConfig reads in config file and ENV variables if set.

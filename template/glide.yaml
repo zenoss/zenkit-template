@@ -23,3 +23,4 @@ import:
 - package: github.com/rcrowley/go-metrics
 - package: github.com/onsi/ginkgo
 - package: github.com/onsi/gomega
+- package: github.com/cenkalti/backoff
