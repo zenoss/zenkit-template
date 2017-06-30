@@ -1,5 +1,5 @@
 FROM golang:1.8.3-alpine
-RUN apk --no-cache add git bash
+RUN apk --no-cache add git bash expect
 RUN go get github.com/tmrts/boilr && \
 	cd /go/src/github.com/tmrts/boilr && \
 	git remote add iancmcc http://github.com/iancmcc/boilr && \

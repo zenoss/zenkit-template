@@ -9,4 +9,14 @@ cleanup () {
 trap cleanup EXIT
 
 boilr template download zenoss/zenkit-template tpl
-boilr template use tpl $NAME
+
+/usr/bin/expect -f <(cat <<EOF
+spawn -noecho boilr template use tpl $NAME
+expect -re ".*Please choose a value for \"Name\".*"
+send "$NAME\n"
+
+interact
+
+exit
+EOF
+)
