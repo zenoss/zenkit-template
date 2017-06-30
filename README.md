@@ -29,6 +29,7 @@ run:
 
     make run
 
-FIXME: Copy this. It is a header that will let you in:
+And you can make requests:
 
-    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJpYW5pYW4iLCJuYW1lIjoiSm9obiBEb2UiLCJhZG1pbiI6dHJ1ZSwic2NvcGVzIjoiYXBpOmFkbWluIGFwaTphY2Nlc3MifQ.LmOCHodOoUU1daXuFq9EQ_Vi-TSvnQ18X9qpO09729A
+    http :8080/hello/dolly
+    http :8080/hello/newman

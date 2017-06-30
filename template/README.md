@@ -87,6 +87,5 @@ be pushed to Amazon ECR automatically by our build system once changes have
 been verified.
 
 ## Environment Variables
-<aside class="notice">Add to this list as configuration is added</aside>
 * `{{Name | toUpper}}_PORT`: {{Port}}
 
