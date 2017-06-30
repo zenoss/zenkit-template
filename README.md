@@ -11,7 +11,7 @@ repository you're creating (e.g., `$GOPATH/src/github.com/zenoss`).
 ## Quickstart
 Just run this to create a microservice named `examplesvc`:
 
-    bash <(curl -sSL https://goo.gl/ckYau) examplesvc
+    bash <(curl -sSL https://git.io/vQB98) examplesvc
 
 (That shortlink is just [create.sh](https://raw.githubusercontent.com/zenoss/zenkit-template/master/create.sh) from this very repo.)
 
@@ -29,3 +29,6 @@ run:
 
     make run
 
+FIXME: Copy this. It is a header that will let you in:
+
+    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJpYW5pYW4iLCJuYW1lIjoiSm9obiBEb2UiLCJhZG1pbiI6dHJ1ZSwic2NvcGVzIjoiYXBpOmFkbWluIGFwaTphY2Nlc3MifQ.LmOCHodOoUU1daXuFq9EQ_Vi-TSvnQ18X9qpO09729A
