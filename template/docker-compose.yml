@@ -10,6 +10,7 @@ services:
       {{Name | toUpper}}_AUTH_KEY_FILE: /run/secrets/auth_key
       {{Name | toUpper}}_LOG_LEVEL: info
       {{Name | toUpper}}_TRACING_ENABLED: 0
+      {{Name | toUpper}}_DEVMODE: 1
     secrets:
       - auth_key
 secrets:

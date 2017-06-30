@@ -32,7 +32,7 @@ var serverCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// Create a new service with default middleware
-		service := zenkit.NewService("{{Name}}")
+		service := zenkit.NewService("{{Name}}", viper.GetBool("devmode"))
 
 		// Set the initial log verbosity
 		zenkit.SetLogLevel(service, viper.GetString("log.level"))
@@ -104,4 +104,8 @@ func init() {
 	serverCmd.PersistentFlags().Int("trace-sample-rate", 100, "Rate at which tracing should sample requests")
 	viper.BindPFlag("trace.sample_rate", serverCmd.PersistentFlags().Lookup("trace-sample-rate"))
 	viper.SetDefault("trace.sample_rate", 100)
+
+	serverCmd.PersistentFlags().Bool("dev-mode", false, "Run the daemon in dev mode, which gives anonymous requests an admin scope")
+	viper.BindPFlag("devmode", serverCmd.PersistentFlags().Lookup("dev-mode"))
+	viper.SetDefault("devmode", false)
 }
