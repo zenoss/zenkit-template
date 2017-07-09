@@ -7,6 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/zenoss/zenkit"
 )
 
 var cfgFile string
@@ -29,9 +30,8 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is /etc/{{Name}}.conf)")
-	RootCmd.PersistentFlags().StringP("log-level", "v", "info", "Log level")
-	viper.BindPFlag("log.level", RootCmd.PersistentFlags().Lookup("log-level"))
-	viper.SetDefault("log.level", "info")
+
+	zenkit.AddLoggingConfiguration(RootCmd)
 }
 
 // initConfig reads in config file and ENV variables if set.
