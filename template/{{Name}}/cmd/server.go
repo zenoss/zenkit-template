@@ -14,7 +14,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/tylerb/graceful"
-	"{{$pkg}}/resources" "{{$pkg}}/resources/app"
+	"{{$pkg}}/resources"
+	"{{$pkg}}/resources/app"
 	"github.com/zenoss/zenkit"
 )
 
