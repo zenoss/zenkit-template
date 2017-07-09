@@ -31,7 +31,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is /etc/{{Name}}.conf)")
 
-	zenkit.AddLoggingConfiguration(RootCmd)
+	zenkit.AddLoggingConfigOptions(RootCmd)
 }
 
 // initConfig reads in config file and ENV variables if set.

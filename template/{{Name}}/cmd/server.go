@@ -2,15 +2,12 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/fsnotify/fsnotify"
-	goalogrus "github.com/goadesign/goa/logging/logrus"
-	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/tylerb/graceful"
@@ -78,5 +75,5 @@ var serverCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(serverCmd)
-	zenkit.AddStandardServerOptions(serverCmd)
+	zenkit.AddStandardServerOptions(serverCmd, {{Port}})
 }
