@@ -1,5 +1,5 @@
 {{ $pkg := print ((print (env "GOPATH") "/src/") | trimPrefix (env "PWD")) "/" Name -}}
-FROM golang:1.8.3-alpine
+FROM zenoss/zenkit-build:1.0
 
 COPY . /go/src/{{$pkg}}
 WORKDIR /go/src/{{$pkg}}/{{Name}}
