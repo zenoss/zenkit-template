@@ -24,6 +24,7 @@ GOBINDATA            := $(shell command -v go-bindata 2> /dev/null)
 ifndef GOBINDATA
 GOBINDATA            := $(DOCKER_CMD) go-bindata
 endif
+IMAGE_NAME			 := zenoss/{{Name}}
 
 .PHONY: default
 default: app init
@@ -31,7 +32,7 @@ default: app init
 .PHONY: docker-compose
 docker-compose: $(DOCKER_COMPOSE)
 
-$(DOCKER_COMPOSE): DOCKER_COMPOSE_VERSION := 1.13.0
+$(DOCKER_COMPOSE): DOCKER_COMPOSE_VERSION := 1.14.0
 $(DOCKER_COMPOSE):
 	@if [ ! -w $(@D) ]; then echo 'No docker-compose found. Please run "sudo make docker-compose" to install it.'; exit 2; else true; fi
 	@curl -L https://github.com/docker/compose/releases/download/$(DOCKER_COMPOSE_VERSION)/docker-compose-`uname -s`-`uname -m` > $@
@@ -69,6 +70,12 @@ run: vendor $(DOCKER_COMPOSE)
 	@$(DOCKER_COMPOSE) up --build
 
 .PHONY: build
+build: COMMIT_SHA := $(shell git rev-parse HEAD)
+ifeq("$(wildcard tag.id)", "")
+build: IMAGE := $(IMAGE_NAME)
+else
+build: IMAGE := $(IMAGE_NAME):$(shell cat tag.id)
+endif
 build: vendor $(DOCKER_COMPOSE)
 	@$(DOCKER_COMPOSE) build {{Name}}
 
@@ -94,12 +101,27 @@ test: app vendor
 	@gocov convert $(COVERAGE_PROFILE) | gocov-xml > $(COVERAGE_XML)
 endif
 
+.PHONY: api-test
+api-test:
+	@echo "not implemented"
+
+.PHONY: version
+ifndef REMOTE_IMAGE
+version:
+	@echo "REMOTE_IMAGE not set" 1>&2
+	@exit 1
+else
+version:
+	@cat version-template.yaml | envsubst > version.yaml
+endif
+
 .PHONY: clean
 clean:
 	rm -f resources/controller_reg.go
 	rm -rf resources/app
 	rm -rf swagger
 	rm -rf $(COVERAGE_DIR)
+	rm -f tag.id version.yaml
 	$(DOCKER_COMPOSE) down
 
 .PHONY: mrclean

@@ -19,7 +19,7 @@ node('docker') {
     service = load 'ci/service.groovy'
 
     stage('Run service unit tests') {
-        sh('make unit_test')
+        sh('make test')
     }
 
     stage('Build service image') {
@@ -28,7 +28,7 @@ node('docker') {
     }
 
     stage('Run service api tests') {
-        sh('make api_test')
+        sh('make api-test')
     }
 
     stage('Publish image') {
