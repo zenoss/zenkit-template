@@ -55,7 +55,7 @@ node('docker') {
 
     stage('Promote to staging') {
         def imageName = "${global.PUBLISHER_STAGING}/${service.DOCKER_IMAGE}:${SHA}"
-        sh("${MAKE} version REMOTE_IMAGE=${imageName}")
+        sh("${MAKE} version.yaml REMOTE_IMAGE=${imageName}")
         archiveArtifacts artifacts: 'version.yaml'
         build job: env.GLOBAL_ACCEPTANCE_JOB, parameters: [
             text(name: 'VERSION', value: readFile('version.yaml'))

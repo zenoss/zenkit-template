@@ -28,7 +28,7 @@ else
 	@docker push $(REMOTE_IMAGE)
 endif
 
-version:
+version.yaml:
 ifndef REMOTE_IMAGE
 	@echo "REMOTE_IMAGE not set" 1>&2; exit 2
 else
