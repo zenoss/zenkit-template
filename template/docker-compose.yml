@@ -1,8 +1,15 @@
-version: "3.1"
+version: "3.3"
 services:
   {{Name}}:
-    image: zenoss/zing-{{Name}}:dev
-    build: .
+    image: ${IMAGE:-zenoss/zing-{{Name}}:dev}
+    build: 
+        context: .
+        labels:
+          zenoss.zing.commit-sha: ${COMMIT_SHA:-none}
+          zenoss.zing.pull-request: ${CHANGE_ID:-none}
+          zenoss.zing.branch_name: ${BRANCH_NAME:-none}
+          zenoss.zing.build_number: ${BUILD_ID:-none}
+          zenoss.zing.build_url: ${BUILD_URL:-none}
     ports:
       - "{{Port}}:{{Port}}"
     environment:
