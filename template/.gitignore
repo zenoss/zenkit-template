@@ -18,6 +18,7 @@
 .glide/
 coverage/
 
-# Make artifacts
-tag.id
+# Makefile artifacts
 version.yaml
+.image_tag
+.project_name

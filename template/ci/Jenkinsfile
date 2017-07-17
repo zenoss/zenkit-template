@@ -17,19 +17,27 @@ node('docker') {
 
     checkout scm
     service = load 'ci/service.groovy'
+	SHA=sh(script: 'git rev-parse --short=8 HEAD | tee .image_tag', returnStdout: true)
+    sh("echo -n {{Name}}-${env.BUILD_NUMBER} > .project_name")
 
-    stage('Run service unit tests') {
-        sh('make test')
+	try	{
+		stage('Run service tests') {
+			sh('make test')
+		}
+
+		stage('Build service image') {
+			sh('make build')
+		}
+
+		stage('Run service api tests') {
+			sh('make api-test')
+		}
+	} finally {
+		stage ('Clean test environment') {
+			sh('make clean')
+		}
     }
 
-    stage('Build service image') {
-        SHA=sh(script: 'git rev-parse --short=8 HEAD | tee tag.id', returnStdout: true)
-        sh('make build')
-    }
-
-    stage('Run service api tests') {
-        sh('make api-test')
-    }
 
     stage('Publish image') {
         def pubSteps = [:]
@@ -52,4 +60,3 @@ node('docker') {
         ]
     }
 }
-

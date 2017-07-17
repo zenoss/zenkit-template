@@ -26,6 +26,10 @@ GOBINDATA            := $(DOCKER_CMD) go-bindata
 endif
 IMAGE_NAME			 := zenoss/{{Name}}
 
+ifneq ("$(wildcard .project_name)", "")
+	PROJECT_NAME = -p $(shell cat .project_name)
+endif
+
 .PHONY: default
 default: app init
 
@@ -67,14 +71,14 @@ app: swagger/swagger.go resources/controller_reg.go resources/admin.go resources
 
 .PHONY: run
 run: vendor $(DOCKER_COMPOSE)
-	@$(DOCKER_COMPOSE) up --build
+	@$(DOCKER_COMPOSE) $(PROJECT_NAME) up --build
 
 .PHONY: build
-build: COMMIT_SHA := $(shell git rev-parse HEAD)
-ifeq("$(wildcard tag.id)", "")
-build: IMAGE := $(IMAGE_NAME)
+build: export COMMIT_SHA = $(shell git rev-parse HEAD)
+ifeq("$(wildcard .image_tag)", "")
+build: export IMAGE = $(IMAGE_NAME)
 else
-build: IMAGE := $(IMAGE_NAME):$(shell cat tag.id)
+build: export IMAGE = $(IMAGE_NAME):$(shell cat tag.id)
 endif
 build: vendor $(DOCKER_COMPOSE)
 	@$(DOCKER_COMPOSE) build {{Name}}
@@ -105,14 +109,27 @@ endif
 api-test:
 	@echo "not implemented"
 
+.PHONY: push
+ifeq ("$(wildcard .image_tag)","")
+push: export IMAGE = $(IMAGE_NAME)
+else
+push: export IMAGE = $(IMAGE_NAME):$(shell cat .image_tag)
+endif
+push:
+ifndef REMOTE_IMAGE
+	@echo "REMOTE_IMAGE not set" 1>&2; exit 2
+else
+	@docker tag $(IMAGE) $(REMOTE_IMAGE)
+	@docker push $(REMOTE_IMAGE)
+endif
+
 .PHONY: version
 ifndef REMOTE_IMAGE
 version:
-	@echo "REMOTE_IMAGE not set" 1>&2
-	@exit 1
+	@echo "REMOTE_IMAGE not set" 1>&2; exit 2
 else
 version:
-	@cat version-template.yaml | envsubst > version.yaml
+	@cat version-template.yaml | REMOTE_IMAGE=$(REMOTE_IMAGE) envsubst > version.yaml
 endif
 
 .PHONY: clean
@@ -121,13 +138,14 @@ clean:
 	rm -rf resources/app
 	rm -rf swagger
 	rm -rf $(COVERAGE_DIR)
-	rm -f tag.id version.yaml
+	rm -f version.yaml
 	$(DOCKER_COMPOSE) down
 
 .PHONY: mrclean
 mrclean: clean
 	rm -rf glide.lock
 	rm -rf vendor
+	rm -f .image_tag .project_name
 
 .git:
 	@git init
