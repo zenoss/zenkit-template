@@ -21,7 +21,7 @@ Once the pull-request is merged into the master branch, the deploy job runs
 in order to prepare the changes in the pull-request for deployment to production.
 
 The jobs are created from a template. To update the jobs for, run the 
-[Microservice Job Builder](http://jenkins.zing.zenoss.eng/job/job_create/parambuild/?service=zinghi).
+[Microservice Job Builder](http://jenkins.zing.zenoss.eng/job/job_create/parambuild/?service={{Name}}).
 More information about the job builder is found 
 [here](https://github.com/zenoss/zing-ci/blob/master/jenkins-job-builder/README.md).`
 
