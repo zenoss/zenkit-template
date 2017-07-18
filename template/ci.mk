@@ -5,7 +5,7 @@ ifneq ($(wildcard $(CI_PROJECT_NAME)),)
 	PROJECT_NAME := -p $(shell cat $(CI_PROJECT_NAME))
 endif
 
-ifneq ($(wildcard $(CI_IMAGE_NAME)),)
+ifneq ($(wildcard $(CI_IMAGE_TAG)),)
 	IMAGE_NAME := zenoss/zing-{{Name}}:$(shell cat $(CI_IMAGE_TAG))
 endif
 
@@ -37,9 +37,9 @@ endif
 
 .PHONY: ci-clean
 ci-clean:
-	rm -f $(CI_PROJECT_NAME) $(CI_IMAGE_TAG)
 	$(DOCKER_COMPOSE) $(PROJECT_NAME) down
 
 .PHONY: ci-mrclean
 ci-mrclean: ci-clean
+	rm -f $(CI_PROJECT_NAME) $(CI_IMAGE_TAG)
 	rm -f version.yaml
