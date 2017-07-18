@@ -18,7 +18,7 @@ node('docker') {
     }
 
     checkout scm
-    service = load 'service.groovy'
+    service = load 'ci/service.groovy'
     SHA=sh(script: 'git rev-parse --short=8 HEAD | tee ci/.image_tag', returnStdout: true)
     sh("echo -n {{Name}}-${env.BUILD_NUMBER} > ci/.project_name")
 
