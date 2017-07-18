@@ -1,2 +1,2 @@
-DOCKER_IMAGE=zenoss/zing-{{Name}}
+DOCKER_IMAGE="zenoss/zing-{{Name}}"
 return this
