@@ -1,12 +1,13 @@
 # Zenkit μsvc Template
 
 Given Docker and a Go development environment, this repository can create you
-a ready-to-go microservice scaffold.
+a ready-to-go microservice scaffold using its companion library,
+[zenkit](https://github.com/zenoss/zenkit).
 
 ## Required environment
-You should have Go and Docker set up and usable by your current user. You
-should also be in the directory under `$GOPATH` representing the owner of the
-repository you're creating (e.g., `$GOPATH/src/github.com/zenoss`).
+* You should have Go and Docker set up and usable by your current user.
+* You should be in the directory under `$GOPATH` representing the owner of the
+  repository you're creating (e.g., `$GOPATH/src/github.com/zenoss`).
 
 ## Quickstart
 Just run this to create a microservice named `examplesvc`:
