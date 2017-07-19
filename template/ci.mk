@@ -2,6 +2,7 @@ JENKINS_WORKSPACE ?=
 CI_PROJECT_NAME := ci/.project_name
 CI_IMAGE_TAG    := ci/.image_tag
 
+ifndef IN_DOCKER
 ifdef JENKINS_WORKSPACE
 DOCKER_CMD := docker run --rm -t \
 					--volumes-from $(shell hostname) \
@@ -10,6 +11,7 @@ DOCKER_CMD := docker run --rm -t \
 					-e IN_DOCKER=1 \
 					-w /go/src/$(PACKAGE) \
 					$(BUILD_IMG)
+endif
 endif
 
 ifneq ($(wildcard $(CI_PROJECT_NAME)),)

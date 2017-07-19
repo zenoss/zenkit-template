@@ -9,6 +9,8 @@ DOCKER_COMPOSE       := /usr/local/bin/docker-compose
 LOCAL_USER_ID        := $(shell id -u)
 BUILD_IMG            := zenoss/zenkit-build:$(ZENKIT_VERSION)
 COVERAGE_DIR         := coverage
+
+ifndef IN_DOCKER
 DOCKER_CMD           := docker run --rm -t \
 							-v $(CURDIR):/go/src/$(PACKAGE):rw \
 							-v $(HOME)/.glide:/home/user/.glide:rw \
@@ -16,6 +18,10 @@ DOCKER_CMD           := docker run --rm -t \
 							-e IN_DOCKER=1 \
 							-w /go/src/$(PACKAGE) \
 							$(BUILD_IMG)
+else
+DOCKER_CMD           :=
+endif
+
 GOAGEN_CMD           := $(DOCKER_CMD) $(GOAGEN)
 GLIDE                := $(shell command -v glide 2> /dev/null)
 ifndef GLIDE
@@ -47,11 +53,7 @@ vendor: glide.lock
 	@$(GLIDE) install --strip-vendor
 
 $(GOAGEN): vendor
-ifdef IN_DOCKER
-	cd $(@D) && go build
-else
 	@$(DOCKER_CMD) make $(GOAGEN)
-endif
 
 swagger/swagger.go: $(DESIGN) | $(GOAGEN)
 	@$(GOAGEN_CMD) swagger -d $(DESIGNPKG)
