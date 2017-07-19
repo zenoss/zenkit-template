@@ -33,7 +33,7 @@ ifndef JENKINS_WORKSPACE
 unit-test: test
 else
 unit-test:
-	$(DOCKER_CMD) make test
+	@$(DOCKER_CMD) make test
 endif
 
 .PHONY: api-test
