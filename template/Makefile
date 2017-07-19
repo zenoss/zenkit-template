@@ -53,7 +53,7 @@ vendor: glide.lock
 	@$(GLIDE) install --strip-vendor
 
 $(GOAGEN): vendor
-	@$(DOCKER_CMD) make $(GOAGEN)
+	@$(DOCKER_CMD) /bin/bash -c 'cd $(@D) && go build'
 
 swagger/swagger.go: $(DESIGN) | $(GOAGEN)
 	@$(GOAGEN_CMD) swagger -d $(DESIGNPKG)
