@@ -7,6 +7,7 @@ DOCKER_CMD := docker run --rm -t \
 					--volumes-from $(shell hostname) \
 					-e SYMLINKS=$(JENKINS_WORKSPACE):/go/src/$(PACKAGE) \
 					-e LOCAL_USER_ID=$(LOCAL_USER_ID) \
+					-e IN_DOCKER=1 \
 					-w /go/src/$(PACKAGE) \
 					$(BUILD_IMG)
 endif

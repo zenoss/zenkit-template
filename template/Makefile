@@ -13,6 +13,7 @@ DOCKER_CMD           := docker run --rm -t \
 							-v $(CURDIR):/go/src/$(PACKAGE):rw \
 							-v $(HOME)/.glide:/home/user/.glide:rw \
 							-e LOCAL_USER_ID=$(LOCAL_USER_ID) \
+							-e IN_DOCKER=1 \
 							-w /go/src/$(PACKAGE) \
 							$(BUILD_IMG)
 GOAGEN_CMD           := $(DOCKER_CMD) $(GOAGEN)
@@ -46,7 +47,11 @@ vendor: glide.lock
 	@$(GLIDE) install --strip-vendor
 
 $(GOAGEN): vendor
-	@$(DOCKER_CMD) /bin/sh -c 'cd $(@D) && go build'
+ifdef IN_DOCKER
+	cd $(@D) && go build
+else
+	@$(DOCKER_CMD) make $(GOAGEN)
+endif
 
 swagger/swagger.go: $(DESIGN) | $(GOAGEN)
 	@$(GOAGEN_CMD) swagger -d $(DESIGNPKG)
