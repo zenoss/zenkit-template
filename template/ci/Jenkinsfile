@@ -25,6 +25,20 @@ node('docker') {
     try	{
         stage('Run service tests') {
             sh("${MAKE} unit-test JENKINS_WORKSPACE=${env.WORKSPACE}")
+            junit "**/junit.xml"
+            step([
+                $class: 'CoberturaPublisher',
+                autoUpdateHealth: false,
+                autoUpdateStability: false,
+                coberturaReportFile: 'coverage/coverage.xml',
+                failUnhealthy: true,
+                failUnstable: true,
+                maxNumberOfBuilds: 0,
+                onlyStable: false,
+                sourceEncoding: 'ASCII',
+                zoomCoverageChart: false,
+                lineCoverageTargets: '90.0, 80.1, 50',
+            ])  
         }
 
         stage('Build service image') {
