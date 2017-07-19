@@ -1,5 +1,5 @@
 {{ $pkg := print ((print (env "GOPATH") "/src/") | trimPrefix (env "PWD")) "/" Name -}}
-ZENKIT_VERSION       := 1.0
+ZENKIT_VERSION       := 1.1
 GINKGO               := $(shell command -v ginkgo 2> /dev/null)
 GOAGEN               := vendor/github.com/goadesign/goa/goagen/goagen
 PACKAGE              := {{$pkg}}
@@ -79,7 +79,7 @@ else
 test: COVERAGE_PROFILE := $(COVERAGE_DIR)/profile.out
 test: COVERAGE_HTML    := $(COVERAGE_DIR)/index.html
 test: COVERAGE_XML     := $(COVERAGE_DIR)/coverage.xml
-test: app vendor
+test: 
 	@mkdir -p $(COVERAGE_DIR)
 	@ginkgo -r \
 		-cover \

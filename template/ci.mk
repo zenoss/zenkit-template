@@ -1,5 +1,15 @@
+JENKINS_WORKSPACE ?=
 CI_PROJECT_NAME := ci/.project_name
 CI_IMAGE_TAG    := ci/.image_tag
+
+ifdef JENKINS_WORKSPACE
+DOCKER_CMD := docker run --rm -t \
+					--volumes-from $(shell hostname) \
+					-e SYMLINKS=$(JENKINS_WORKSPACE):/go/src/$(PACKAGE) \
+					-e LOCAL_USER_ID=$(LOCAL_USER_ID) \
+					-w /go/src/$(PACKAGE) \
+					$(BUILD_IMG)
+endif
 
 ifneq ($(wildcard $(CI_PROJECT_NAME)),)
 	PROJECT_NAME := -p $(shell cat $(CI_PROJECT_NAME))
@@ -14,6 +24,14 @@ build: export IMAGE = $(IMAGE_NAME)
 build: export COMMIT_SHA = $(shell git rev-parse HEAD)
 build: $(CI_PROJECT_NAME) $(CI_IMAGE_TAG) $(DOCKER_COMPOSE)
 	@$(DOCKER_COMPOSE) $(PROJECT_NAME) build {{Name}}
+
+.PHONY: unit-test
+ifndef JENKINS_WORKSPACE
+unit-test: test
+else
+unit-test:
+	$(DOCKER_CMD) make test
+endif
 
 .PHONY: api-test
 api-test: $(CI_PROJECT_NAME) $(CI_IMAGE_TAG) $(DOCKER_COMPOSE)
@@ -41,5 +59,5 @@ ci-clean:
 
 .PHONY: ci-mrclean
 ci-mrclean: ci-clean
-	rm -f $(CI_PROJECT_NAME) $(CI_IMAGE_TAG)
 	rm -f version.yaml
+	rm -f $(CI_PROJECT_NAME) $(CI_IMAGE_TAG)
