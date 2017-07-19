@@ -6,3 +6,4 @@ docker run --rm -it \
 	-e IN_DOCKER=1 \
 	zenoss/zenkit-build:1.1 \
 	/usr/local/bin/create-zenkit.sh $1
+(cd $1; make)
