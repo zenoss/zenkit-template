@@ -21,7 +21,4 @@ coverage/
 # JUnit test output
 junit.xml
 
-# CI related files
 version.yaml
-ci/.image_tag
-ci/.project_name
