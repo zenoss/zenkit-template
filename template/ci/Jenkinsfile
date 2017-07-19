@@ -20,11 +20,11 @@ node('docker') {
     checkout scm
     service = load 'ci/service.groovy'
     SHA=sh(script: 'git rev-parse --short=8 HEAD | tee ci/.image_tag', returnStdout: true)
-    sh("echo -n {{Name}}-${env.BUILD_NUMBER} > ci/.project_name")
+    sh("echo -n {{Name}}${env.BUILD_NUMBER} > ci/.project_name")
 
     try	{
         stage('Run service tests') {
-            sh("${MAKE} test")
+            sh("${MAKE} unit-test JENKINS_WORKSPACE=${env.WORKSPACE}")
         }
 
         stage('Build service image') {
