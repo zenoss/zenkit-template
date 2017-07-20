@@ -2,6 +2,7 @@ package resources_test
 
 import (
 	. "github.com/onsi/ginkgo"
+	"github.com/onsi/ginkgo/reporters"
 	. "github.com/onsi/gomega"
 
 	"testing"
@@ -9,5 +10,6 @@ import (
 
 func TestResources(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "{{Name | title}} Resources Suite")
+	junitReporter := reporters.NewJUnitReporter("junit.xml")
+	RunSpecsWithDefaultAndCustomReporters(t, "{{Name | title}} Resources Suite", []Reporter{junitReporter})
 }
