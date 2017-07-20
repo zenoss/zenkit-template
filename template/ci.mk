@@ -25,7 +25,7 @@ endif
 .PHONY: build
 build: export IMAGE = $(IMAGE_NAME)
 build: export COMMIT_SHA = $(shell git rev-parse HEAD)
-build: $(CI_PROJECT_NAME) $(CI_IMAGE_TAG) $(DOCKER_COMPOSE)
+build: $(DOCKER_COMPOSE)
 	@$(DOCKER_COMPOSE) $(PROJECT_NAME) build {{Name}}
 
 .PHONY: unit-test
@@ -37,7 +37,7 @@ unit-test:
 endif
 
 .PHONY: api-test
-api-test: $(CI_PROJECT_NAME) $(CI_IMAGE_TAG) $(DOCKER_COMPOSE)
+api-test: $(DOCKER_COMPOSE)
 	@echo "Not implemented"
 
 .PHONY: push
