@@ -23,7 +23,7 @@ var serverCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// Create a new service with default middleware
-		service := zenkit.NewService("{{Name}}", viper.GetBool(zenkit.AuthEnabledConfig))
+		service := zenkit.NewService("{{Name}}", viper.GetBool(zenkit.AuthDisabledConfig))
 
 		// Set the initial log verbosity
 		zenkit.SetLogLevel(service, viper.GetString(zenkit.LogLevelConfig))

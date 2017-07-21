@@ -2,7 +2,7 @@
 log:
   level: info
 auth:
-  enabled: true
+  disabled: false
   key_file: ""
 http:
   port: {{Port}}
