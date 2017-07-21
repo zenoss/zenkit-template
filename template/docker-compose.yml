@@ -1,8 +1,8 @@
 version: "3.3"
 services:
   {{Name}}:
-    image: ${IMAGE:-zenoss/zing-{{Name}}:dev}
-    build:
+    image: ${SERVICE_IMAGE}:${IMAGE_TAG:-dev}
+    build: 
         context: .
         labels:
           zenoss.zing.commit-sha: ${COMMIT_SHA:-none}

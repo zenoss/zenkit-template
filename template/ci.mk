@@ -1,6 +1,9 @@
+include .env
+include Makefile
+
 JENKINS_WORKSPACE ?=
-CI_PROJECT_NAME := ci/.project_name
-CI_IMAGE_TAG    := ci/.image_tag
+IMAGE_NAME   := ${SERVICE_IMAGE}:${IMAGE_TAG}
+REMOTE_IMAGE := ${REGISTRY}/${SERVICE_IMAGE}:$(if ${REMOTE_TAG},${REMOTE_TAG},${IMAGE_TAG})
 
 ifndef IN_DOCKER
 ifdef JENKINS_WORKSPACE
@@ -14,19 +17,28 @@ DOCKER_CMD := docker run --rm -t \
 endif
 endif
 
-ifneq ($(wildcard $(CI_PROJECT_NAME)),)
-	PROJECT_NAME := -p $(shell cat $(CI_PROJECT_NAME))
-endif
+.PHONY: default
+default: build
 
-ifneq ($(wildcard $(CI_IMAGE_TAG)),)
-	IMAGE_NAME := zenoss/zing-{{Name}}:$(shell cat $(CI_IMAGE_TAG))
-endif
+.PHONY: IMAGE_NAME_VALID
+IMAGE_NAME_VALID:
+	@test ${SERVICE_IMAGE} || (echo "SERVICE_IMAGE must be defined"; false)
+	@test ${IMAGE_TAG} || (echo "IMAGE_TAG must be defined"; false)
+
+.PHONY: REMOTE_IMAGE_VALID
+REMOTE_IMAGE_VALID:
+	@test ${REGISTRY} || (echo "REGISTRY must be defined"; false)
+	@test ${SERVICE_IMAGE} || (echo "SERVICE_IMAGE must be defined"; false)
+	@test ${REMOTE_TAG}${IMAGE_TAG} || (echo "REMOTE_TAG or IMAGE_TAG must be defined"; false)
+
+.PHONY: PROJECT_NAME_VALID
+PROJECT_NAME_VALID:
+	@test ${PROJECT_NAME} || (echo "PROJECT_NAME must be defined"; false)
 
 .PHONY: build
-build: export IMAGE = $(IMAGE_NAME)
-build: export COMMIT_SHA = $(shell git rev-parse HEAD)
+build: export COMMIT_SHA ?= $(shell git rev-parse HEAD)
 build: $(DOCKER_COMPOSE)
-	@$(DOCKER_COMPOSE) $(PROJECT_NAME) build {{Name}}
+	@$(DOCKER_COMPOSE) build {{Name}}
 
 .PHONY: unit-test
 ifndef JENKINS_WORKSPACE
@@ -37,30 +49,21 @@ unit-test:
 endif
 
 .PHONY: api-test
-api-test: $(DOCKER_COMPOSE)
+api-test: $(DOCKER_COMPOSE) PROJECT_NAME_VALID
 	@echo "Not implemented"
 
 .PHONY: push
-push: $(CI_IMAGE_TAG)
-ifndef REMOTE_IMAGE
-	@echo "REMOTE_IMAGE not set" 1>&2; exit 2
-else
+push: REMOTE_IMAGE_VALID IMAGE_NAME_VALID
 	@docker tag $(IMAGE_NAME) $(REMOTE_IMAGE)
 	@docker push $(REMOTE_IMAGE)
-endif
 
-version.yaml:
-ifndef REMOTE_IMAGE
-	@echo "REMOTE_IMAGE not set" 1>&2; exit 2
-else
+version.yaml: REMOTE_IMAGE_VALID
 	@cat ci/version-template.yaml | REMOTE_IMAGE=$(REMOTE_IMAGE) envsubst > version.yaml
-endif
 
 .PHONY: ci-clean
-ci-clean:
-	$(DOCKER_COMPOSE) $(PROJECT_NAME) down
+ci-clean: PROJECT_NAME_VALID
+	$(DOCKER_COMPOSE) -p $(PROJECT_NAME) down
 
 .PHONY: ci-mrclean
 ci-mrclean: ci-clean
 	rm -f version.yaml
-	rm -f $(CI_PROJECT_NAME) $(CI_IMAGE_TAG)
