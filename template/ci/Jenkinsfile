@@ -1,6 +1,6 @@
 #! groovy
 
-MAKE='make -f ci.mk'
+MAKE='make -f ci/Makefile'
 
 node('docker') {
     currentBuild.displayName = "PR #${env.ghprbPullId}@${env.NODE_NAME}"
