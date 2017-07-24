@@ -45,11 +45,11 @@ $(DOCKER_COMPOSE):
 	@chmod +x $@
 
 glide.lock: glide.yaml
-	@mkdir -p $(HOME)/.glide
+	@mkdir -p .glide
 	@$(GLIDE) update --strip-vendor
 
 vendor: glide.lock
-	@mkdir -p $(HOME)/.glide
+	@mkdir -p .glide
 	@$(GLIDE) install --strip-vendor
 
 $(GOAGEN): vendor
