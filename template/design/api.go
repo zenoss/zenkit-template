@@ -13,7 +13,7 @@ var _ = API("{{Name}}", func() {
 	Consumes("application/json")
 	Produces("application/json")
 
-	Security(zenkit.JWT, func() {
+	Security(zenkit.JWT(), func() {
 		Scope(zenkit.ScopeAPIAccess)
 	})
 

@@ -7,7 +7,7 @@ import (
 )
 
 var _ = Resource("admin", func() {
-	Security(zenkit.JWT, func() {
+	Security(zenkit.JWT(), func() {
 		Scope(zenkit.ScopeAPIAdmin)
 	})
 	BasePath("/_admin")
