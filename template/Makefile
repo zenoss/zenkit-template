@@ -13,7 +13,6 @@ COVERAGE_DIR         := coverage
 ifndef IN_DOCKER
 DOCKER_CMD           := docker run --rm -t \
 							-v $(CURDIR):/go/src/$(PACKAGE):rw \
-							-v $(HOME)/.glide:/home/user/.glide:rw \
 							-e LOCAL_USER_ID=$(LOCAL_USER_ID) \
 							-e IN_DOCKER=1 \
 							-w /go/src/$(PACKAGE) \
