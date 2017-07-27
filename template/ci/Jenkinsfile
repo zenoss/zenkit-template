@@ -11,13 +11,34 @@ node('docker') {
     }
 
     checkout scm
+    HOST_MOUNT = sh(
+        script: "hostname | xargs -I@ docker inspect @ --format \"{{`{{ (index .Mounts 1).Source }}`}}\"",
+        returnStdout: true,
+    ).trim()
+    CTR_MOUNT = sh(
+        script: "hostname | xargs -I@ docker inspect @ --format \"{{`{{ (index .Mounts 1).Destination }}`}}\"",
+        returnStdout: true,
+    ).trim()
+    HOST_WORKSPACE = HOST_MOUNT + (env.WORKSPACE - CTR_MOUNT)
 	withEnv([
 		"COMMIT_SHA=${env.ghprbActualCommit}",
 		"IMAGE_TAG=${env.ghprbActualCommit.substring(0,8)}",
-		"PROJECT_NAME=cassandra-${env.BUILD_NUMBER}"]) {
+		"PROJECT_NAME={{Name}}-${env.BUILD_NUMBER}",
+        "ROOTDIR=${HOST_WORKSPACE}"]) {
 		try	{
 			stage('Run service tests') {
-				sh("${MAKE} unit-test JENKINS_WORKSPACE=${env.WORKSPACE}")
+				sh("${MAKE} unit-test")
+			}
+
+			stage('Build service image') {
+				sh("${MAKE} build")
+			}
+
+			stage('Run service api tests') {
+				sh("${MAKE} api-test")
+			}
+
+            stage('Publish test reports') {
 				junit "**/junit.xml"
 				step([
 					$class: 'CoberturaPublisher',
@@ -30,17 +51,8 @@ node('docker') {
 					onlyStable: false,
 					sourceEncoding: 'ASCII',
 					zoomCoverageChart: false,
-					lineCoverageTargets: '90.0, 80.1, 50',
 				])  
-			}
-
-			stage('Build service image') {
-				sh("${MAKE} build")
-			}
-
-			stage('Run service api tests') {
-				sh("${MAKE} api-test")
-			}
+            }
 		} finally {
 			stage ('Clean test environment') {
 				sh("${MAKE} ci-clean")
@@ -62,7 +74,6 @@ node('docker') {
 
 		stage('Promote to staging') {
 			sh("${MAKE} version.yaml REGISTRY=${global.PUBLISHER_STAGING}")
-			archiveArtifacts artifacts: 'version.yaml'
 			build job: env.GLOBAL_ACCEPTANCE_JOB, parameters: [
 				text(name: 'VERSION', value: readFile('version.yaml')),
 				text(name: 'OVERRIDE_BUILD_ID', value:"{{Name}} PR#${ghprbPullId}")

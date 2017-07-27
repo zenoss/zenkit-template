@@ -24,3 +24,4 @@ import:
 - package: github.com/onsi/ginkgo
 - package: github.com/onsi/gomega
 - package: github.com/cenkalti/backoff
+- package: github.com/snikch/goodman

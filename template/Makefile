@@ -1,5 +1,7 @@
 {{ $pkg := print ((print (env "GOPATH") "/src/") | trimPrefix (env "PWD")) "/" Name -}}
-ZENKIT_VERSION       := 1.1
+SHELL                := /bin/bash
+ROOTDIR              ?= $(CURDIR)
+ZENKIT_VERSION       := 1.3
 GINKGO               := $(shell command -v ginkgo 2> /dev/null)
 GOAGEN               := vendor/github.com/goadesign/goa/goagen/goagen
 PACKAGE              := {{$pkg}}
@@ -10,16 +12,16 @@ LOCAL_USER_ID        := $(shell id -u)
 BUILD_IMG            := zenoss/zenkit-build:$(ZENKIT_VERSION)
 COVERAGE_DIR         := coverage
 
-ifndef IN_DOCKER
-DOCKER_CMD           := docker run --rm -t \
-							-v $(CURDIR):/go/src/$(PACKAGE):rw \
+DOCKER_PARAMS        := --rm -v $(ROOTDIR):/go/src/$(PACKAGE):rw \
 							-e LOCAL_USER_ID=$(LOCAL_USER_ID) \
-							-e IN_DOCKER=1 \
-							-w /go/src/$(PACKAGE) \
-							$(BUILD_IMG)
-else
-DOCKER_CMD           :=
+							-w /go/src/$(PACKAGE) 
+DOCKER_CMD           := docker run -t $(DOCKER_PARAMS) $(BUILD_IMG)
+
+DOCKER_COMPOSE_BASE  := $(DOCKER_COMPOSE)
+ifdef PROJECT_NAME
+DOCKER_COMPOSE_BASE  += -p $(PROJECT_NAME)
 endif
+DOCKER_COMPOSE_FILES ?= docker-compose.yml api/docker-compose.yml
 
 GOAGEN_CMD           := $(DOCKER_CMD) $(GOAGEN)
 GLIDE                := $(shell command -v glide 2> /dev/null)
@@ -67,25 +69,40 @@ resources/app/%.go: $(DESIGN) | $(GOAGEN)
 resources/%.go: $(DESIGN) | $(GOAGEN)
 	@$(GOAGEN_CMD) controller --regen --pkg resources -o resources -d $(DESIGNPKG)
 
+ifndef GINKGO
+api/%_hooks: api/%_hooks.go
+	@$(DOCKER_CMD) go build -o $@ $<
+else
+api/%_hooks: api/%_hooks.go
+	@go build -o $@ $<
+endif
+
 .PHONY: app
 app: swagger/swagger.go resources/controller_reg.go resources/admin.go resources/app/controllers.go
 
+.PHONY: build
+build: export COMMIT_SHA ?= $(shell git rev-parse HEAD)
+build: export GIT_BRANCH ?= $(shell git symbolic-ref HEAD | sed -e "s/^refs\/heads\///")
+build: export PULL_REQUEST = ${ghprbPullLink}
+build: $(DOCKER_COMPOSE)
+	@$(DOCKER_COMPOSE_BASE) build {{Name}}
+
 .PHONY: run
 run: vendor $(DOCKER_COMPOSE)
-	@$(DOCKER_COMPOSE) up --build
+	@$(DOCKER_COMPOSE_BASE) up --build
 
-.PHONY: test-containerized
-test-containerized:
-	@$(DOCKER_CMD) make test
+.PHONY: unit-test-containerized
+unit-test-containerized:
+	@$(DOCKER_CMD) make unit-test
 
-.PHONY: test
+.PHONY: unit-test
 ifndef GINKGO
-test: test-containerized
+unit-test: unit-test-containerized
 else
-test: COVERAGE_PROFILE := $(COVERAGE_DIR)/profile.out
-test: COVERAGE_HTML    := $(COVERAGE_DIR)/index.html
-test: COVERAGE_XML     := $(COVERAGE_DIR)/coverage.xml
-test: 
+unit-test: COVERAGE_PROFILE := $(COVERAGE_DIR)/profile.out
+unit-test: COVERAGE_HTML    := $(COVERAGE_DIR)/index.html
+unit-test: COVERAGE_XML     := $(COVERAGE_DIR)/coverage.xml
+unit-test: 
 	@mkdir -p $(COVERAGE_DIR)
 	@ginkgo -r \
 		-cover \
@@ -96,13 +113,27 @@ test:
 	@gocov convert $(COVERAGE_PROFILE) | gocov-xml > $(COVERAGE_XML)
 endif
 
+.PHONY: api-test-containerized
+api-test-containerized: DOCKER_CMD:=$(DOCKER_COMPOSE_BASE) $(addprefix -f ,$(DOCKER_COMPOSE_FILES)) run $(DOCKER_PARAMS) api
+api-test-containerized: $(DOCKER_COMPOSE_FILES) api/{{Name}}_hooks
+	@$(DOCKER_CMD) dredd ./swagger/swagger.yaml {{Name}}:{{Port}} \
+		-a go -f api/{{Name}}_hooks \
+		-r junit -o api/junit.xml
+
+.PHONY: api-test
+api-test: DOCKER_COMPOSE_FILES:=docker-compose.yml api/docker-compose.yml
+api-test: api-test-containerized
+
+.PHONY: test
+test: unit-test api-test
+
 .PHONY: clean
 clean:
 	rm -f resources/controller_reg.go
 	rm -rf resources/app
 	rm -rf swagger
 	rm -rf $(COVERAGE_DIR)
-	$(DOCKER_COMPOSE) down
+	$(DOCKER_COMPOSE_BASE) down
 
 .PHONY: mrclean
 mrclean: clean
@@ -123,4 +154,3 @@ local-dev:
 	go get github.com/axw/gocov/gocov
 	go get github.com/AlekSi/gocov-xml
 	curl https://glide.sh/get | sh
-

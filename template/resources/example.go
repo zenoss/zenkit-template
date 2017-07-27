@@ -33,10 +33,11 @@ func (c *ExampleController) Add(ctx *app.AddExampleContext) error {
 	ctr := metrics.GetOrRegisterCounter("{{Name}}.Add.total", zenkit.ContextMetrics(ctx))
 	ctr.Inc(int64(total))
 
-	return ctx.OK(total)
+	return ctx.OK(&app.XTesterSum{Total: total})
 
 	// ExampleController_Add: end_implement
-	return nil
+	res := &app.XTesterSum{}
+	return ctx.OK(res)
 }
 
 // Greet runs the greet action.

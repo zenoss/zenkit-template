@@ -11,7 +11,7 @@ services:
           zenoss.zing.build_number: ${BUILD_ID:-none}
           zenoss.zing.build_url: ${BUILD_URL:-none}
     ports:
-      - "{{Port}}:{{Port}}"
+      - "{{Port}}"
     environment:
       {{Name | toUpper}}_LOG_LEVEL: info
       {{Name | toUpper}}_HTTP_PORT: {{Port}}
