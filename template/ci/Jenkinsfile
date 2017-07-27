@@ -64,7 +64,8 @@ node('docker') {
 			sh("${MAKE} version.yaml REGISTRY=${global.PUBLISHER_STAGING}")
 			archiveArtifacts artifacts: 'version.yaml'
 			build job: env.GLOBAL_ACCEPTANCE_JOB, parameters: [
-				text(name: 'VERSION', value: readFile('version.yaml'))
+				text(name: 'VERSION', value: readFile('version.yaml')),
+				text(name: 'OVERRIDE_BUILD_ID', value:"{{Name}} PR#${ghprbPullId}")
 			]
 		}
 	}
