@@ -49,7 +49,7 @@ var Greeting = MediaType("application/x.{{Name}}.greeting+json", func() {
 	})
 })
 
-var Sum = MediaType("application/x.tester.sum+json", func() {
+var Sum = MediaType("application/x.{{Name}}.sum+json", func() {
 	Description("The sum of two numbers")
 	Attributes(func() {
 		Attribute("total", Integer, "The sum total", func() {

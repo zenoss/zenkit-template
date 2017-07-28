@@ -33,10 +33,10 @@ func (c *ExampleController) Add(ctx *app.AddExampleContext) error {
 	ctr := metrics.GetOrRegisterCounter("{{Name}}.Add.total", zenkit.ContextMetrics(ctx))
 	ctr.Inc(int64(total))
 
-	return ctx.OK(&app.XTesterSum{Total: total})
+	return ctx.OK(&app.X{{Name | title}}Sum{Total: total})
 
 	// ExampleController_Add: end_implement
-	res := &app.XTesterSum{}
+	res := &app.X{{Name | title}}Sum{}
 	return ctx.OK(res)
 }
 
