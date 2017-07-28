@@ -3,7 +3,7 @@ services:
   {{Name}}:
     image: ${SERVICE_IMAGE}:${IMAGE_TAG:-dev}
     healthcheck:
-      test: test $$(curl localhost:{{Port}}/_admin/ping) = 200
+      test: test $$(curl localhost:{{Port}}/_admin/ping) = PONG
     build: 
         context: .
         labels:
