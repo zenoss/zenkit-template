@@ -2,6 +2,8 @@ version: "3.3"
 services:
   {{Name}}:
     image: ${SERVICE_IMAGE}:${IMAGE_TAG:-dev}
+    healthcheck:
+      test: test $$(curl localhost:{{Port}}/_admin/ping) = 200
     build: 
         context: .
         labels:
