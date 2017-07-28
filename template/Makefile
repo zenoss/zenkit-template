@@ -73,19 +73,19 @@ version: "3.3"
 services:
     api-test:
         image: $(BUILD_IMG)
-    depends_on:
-	    - {{Name}}
+        depends_on:
+            - {{Name}}
 endef
 
 hooks/docker-compose.yml: export HOOKS_DOCKER_COMPOSE_YAML:=$(HOOKS_DOCKER_COMPOSE_YAML)
 hooks/docker-compose.yml:
-	echo "$$HOOKS_DOCKER_COMPOSE_YAML" > hooks/docker-compose.yml
+	@echo "$$HOOKS_DOCKER_COMPOSE_YAML" > hooks/docker-compose.yml
 
 ifndef GINKGO
-hooks/%_hooks: api/%_hooks.go
+hooks/%_hooks: hooks/%_hooks.go
 	@$(DOCKER_CMD) go build -o $@ $<
 else
-hooks/%_hooks: api/%_hooks.go
+hooks/%_hooks: hooks/%_hooks.go
 	@go build -o $@ $<
 endif
 
@@ -133,7 +133,7 @@ api-test-containerized: DOCKER_CMD := $(DOCKER_COMPOSE_BASE) $(addprefix -f ,$(D
 api-test-containerized: $(DOCKER_COMPOSE_FILES) $(HOOK_FILES)
 	@$(DOCKER_CMD) dredd ./swagger/swagger.yaml {{Name}}:{{Port}} \
 		-a go -f hooks/*_hooks \
-		-r junit -o api/junit.xml
+		-r junit -o hooks/junit.xml
 
 .PHONY: api-test
 api-test: api-test-containerized
