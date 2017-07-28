@@ -1,24 +1,21 @@
+DOCKER_COMPOSE_FILES ?= docker-compose.yml hooks/docker-compose.yml ci/docker-compose.yml
+
 include .env
 include Makefile
 
-JENKINS_WORKSPACE ?=
 IMAGE_NAME   := ${SERVICE_IMAGE}:${IMAGE_TAG}
 REMOTE_IMAGE := ${REGISTRY}/${SERVICE_IMAGE}:$(if ${REMOTE_TAG},${REMOTE_TAG},${IMAGE_TAG})
 
-ifndef IN_DOCKER
-ifdef JENKINS_WORKSPACE
-DOCKER_CMD := docker run --rm -t \
-					--volumes-from $(shell hostname) \
-					-e SYMLINKS=$(JENKINS_WORKSPACE):/go/src/$(PACKAGE) \
-					-e LOCAL_USER_ID=$(LOCAL_USER_ID) \
-					-e IN_DOCKER=1 \
-					-w /go/src/$(PACKAGE) \
-					$(BUILD_IMG)
-endif
-endif
+define CI_DOCKER_COMPOSE_YAML
+version: "3.3"
+secrets:
+    auth_key:
+        file: $(ROOTDIR)/dev.secret
+endef
 
-.PHONY: default
-default: build
+ci/docker-compose.yml: export CI_DOCKER_COMPOSE_YAML:=$(CI_DOCKER_COMPOSE_YAML)
+ci/docker-compose.yml:
+	@echo "$$CI_DOCKER_COMPOSE_YAML" > $@
 
 .PHONY: IMAGE_NAME_VALID
 IMAGE_NAME_VALID:
@@ -31,41 +28,27 @@ REMOTE_IMAGE_VALID:
 	@test ${SERVICE_IMAGE} || (echo "SERVICE_IMAGE must be defined"; false)
 	@test ${REMOTE_TAG}${IMAGE_TAG} || (echo "REMOTE_TAG or IMAGE_TAG must be defined"; false)
 
-.PHONY: PROJECT_NAME_VALID
-PROJECT_NAME_VALID:
-	@test ${PROJECT_NAME} || (echo "PROJECT_NAME must be defined"; false)
-
-.PHONY: build
-build: export COMMIT_SHA ?= $(shell git rev-parse HEAD)
-build: export GIT_BRANCH ?= $(shell git symbolic-ref HEAD | sed -e "s/^refs\/heads\///")
-build: export PULL_REQUEST = ${ghprbPullLink}
-build: $(DOCKER_COMPOSE)
-	@$(DOCKER_COMPOSE) build {{Name}}
-
-.PHONY: unit-test
-ifndef JENKINS_WORKSPACE
-unit-test: test
-else
-unit-test:
-	@$(DOCKER_CMD) make test
-endif
-
-.PHONY: api-test
-api-test: $(DOCKER_COMPOSE) PROJECT_NAME_VALID
-	@echo "Not implemented"
-
 .PHONY: push
 push: REMOTE_IMAGE_VALID IMAGE_NAME_VALID
 	@docker tag $(IMAGE_NAME) $(REMOTE_IMAGE)
 	@docker push $(REMOTE_IMAGE)
 
-version.yaml: REMOTE_IMAGE_VALID
-	@cat ci/version-template.yaml | REMOTE_IMAGE=$(REMOTE_IMAGE) envsubst > version.yaml
+define VERSION_YAML
+version: "3.2"
+services:
+    {{Name}}:
+        image: $(REMOTE_IMAGE)
+endef
+
+ci/version.yml: export VERSION_YAML:=$(VERSION_YAML)
+ci/version.yml: REMOTE_IMAGE_VALID
+	@$(DOCKER_COMPOSE_BASE) -f <(echo "$$VERSION_YAML") config > $@
 
 .PHONY: ci-clean
-ci-clean: PROJECT_NAME_VALID
-	$(DOCKER_COMPOSE) -p $(PROJECT_NAME) down
+ci-clean:
+	$(DOCKER_COMPOSE_BASE) down
 
 .PHONY: ci-mrclean
 ci-mrclean: ci-clean
-	rm -f version.yaml
+	rm -f ci/version.yaml
+	rm -f ci/docker-compose.yml

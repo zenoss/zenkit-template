@@ -1,5 +1,5 @@
 {{ $pkg := print ((print (env "GOPATH") "/src/") | trimPrefix (env "PWD")) "/" Name -}}
-FROM zenoss/zenkit-build:1.1
+FROM zenoss/zenkit-build:1.3
 
 COPY . /go/src/{{$pkg}}
 WORKDIR /go/src/{{$pkg}}/{{Name}}

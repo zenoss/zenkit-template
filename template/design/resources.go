@@ -14,7 +14,9 @@ var _ = Resource("example", func() {
 		Description("Say hello to somebody")
 		Routing(GET("/hello/:name"))
 		Params(func() {
-			Param("name", String, "User name")
+			Param("name", String, "User name", func() {
+				Metadata("swagger:extension:x-example", "Keanu")
+			})
 		})
 		Response(OK, Greeting)
 		Response(BadRequest)
@@ -23,20 +25,39 @@ var _ = Resource("example", func() {
 		Description("Add two numbers")
 		Routing(GET("/add/:a/:b"))
 		Params(func() {
-			Param("a", Integer, "A number to add")
-			Param("b", Integer, "A number to add")
+			Param("a", Integer, "A number to add", func() {
+				Metadata("swagger:extension:x-example", "32")
+			})
+			Param("b", Integer, "A number to add", func() {
+				Metadata("swagger:extension:x-example", "24")
+			})
 		})
-		Response(OK, Integer)
+		Response(OK, Sum)
 	})
 })
 
 var Greeting = MediaType("application/x.{{Name}}.greeting+json", func() {
 	Description("The result of saying hello")
 	Attributes(func() {
-		Attribute("greeting", String, "The greeting")
+		Attribute("greeting", String, "The greeting", func() {
+			Example("Hello, Keanu!")
+		})
 		Required("greeting")
 	})
 	View("default", func() {
 		Attribute("greeting")
+	})
+})
+
+var Sum = MediaType("application/x.{{Name}}.sum+json", func() {
+	Description("The sum of two numbers")
+	Attributes(func() {
+		Attribute("total", Integer, "The sum total", func() {
+			Example(56)
+		})
+		Required("total")
+	})
+	View("default", func() {
+		Attribute("total")
 	})
 })
