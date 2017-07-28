@@ -2,6 +2,7 @@
 SHELL                := /bin/bash
 ROOTDIR              ?= $(CURDIR)
 ZENKIT_VERSION       := 1.3
+GOLANG               := $(shell command -v go 2> /dev/null)
 GINKGO               := $(shell command -v ginkgo 2> /dev/null)
 GOAGEN               := vendor/github.com/goadesign/goa/goagen/goagen
 PACKAGE              := {{$pkg}}
@@ -81,7 +82,7 @@ hooks/docker-compose.yml: export HOOKS_DOCKER_COMPOSE_YAML:=$(HOOKS_DOCKER_COMPO
 hooks/docker-compose.yml:
 	@echo "$$HOOKS_DOCKER_COMPOSE_YAML" > hooks/docker-compose.yml
 
-ifndef GINKGO
+ifndef GOLANG
 hooks/%_hooks: hooks/%_hooks.go
 	@$(DOCKER_CMD) go build -o $@ $<
 else
