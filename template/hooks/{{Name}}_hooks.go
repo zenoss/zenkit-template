@@ -1,3 +1,4 @@
+{{ $pkg := print ((print (env "GOPATH") "/src/") | trimPrefix (env "PWD")) "/" Name -}}
 package main
 
 import (
@@ -6,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"{{$pkg}}/resources/app"
 	"github.com/snikch/goodman/hooks"
 	trans "github.com/snikch/goodman/transaction"
 )
