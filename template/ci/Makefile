@@ -1,4 +1,4 @@
-DOCKER_COMPOSE_FILES = docker-compose.yml api/docker-compose.yml ci/docker-compose.yml
+DOCKER_COMPOSE_FILES ?= docker-compose.yml hooks/docker-compose.yml ci/docker-compose.yml
 
 include .env
 include Makefile
@@ -6,16 +6,16 @@ include Makefile
 IMAGE_NAME   := ${SERVICE_IMAGE}:${IMAGE_TAG}
 REMOTE_IMAGE := ${REGISTRY}/${SERVICE_IMAGE}:$(if ${REMOTE_TAG},${REMOTE_TAG},${IMAGE_TAG})
 
-define DOCKER_COMPOSE_YAML
+define CI_DOCKER_COMPOSE_YAML
 version: "3.3"
 secrets:
     auth_key:
         file: $(ROOTDIR)/dev.secret
 endef
 
-ci/docker-compose.yml: export DOCKER_COMPOSE_YAML:=$(DOCKER_COMPOSE_YAML)
+ci/docker-compose.yml: export CI_DOCKER_COMPOSE_YAML:=$(CI_DOCKER_COMPOSE_YAML)
 ci/docker-compose.yml:
-	@echo "$$DOCKER_COMPOSE_YAML" > $@
+	@echo "$$CI_DOCKER_COMPOSE_YAML" > $@
 
 .PHONY: IMAGE_NAME_VALID
 IMAGE_NAME_VALID:
@@ -40,8 +40,8 @@ services:
         image: $(REMOTE_IMAGE)
 endef
 
-version.yaml: export VERSION_YAML:=$(VERSION_YAML)
-version.yaml: REMOTE_IMAGE_VALID
+ci/version.yml: export VERSION_YAML:=$(VERSION_YAML)
+ci/version.yml: REMOTE_IMAGE_VALID
 	@$(DOCKER_COMPOSE_BASE) -f <(echo "$$VERSION_YAML") config > $@
 
 .PHONY: ci-clean
@@ -50,5 +50,5 @@ ci-clean:
 
 .PHONY: ci-mrclean
 ci-mrclean: ci-clean
-	rm -f version.yaml
+	rm -f ci/version.yaml
 	rm -f ci/docker-compose.yml

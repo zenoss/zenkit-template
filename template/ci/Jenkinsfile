@@ -3,14 +3,13 @@
 MAKE='make -f ci/Makefile'
 
 node('docker') {
+
     currentBuild.displayName = "PR #${env.ghprbPullId}@${env.NODE_NAME}"
     configFileProvider([
         configFile(fileId: 'global', variable: 'GLOBAL'),
     ]) {
         global = load env.GLOBAL
     }
-
-    checkout scm
     HOST_MOUNT = sh(
         script: "hostname | xargs -I@ docker inspect @ --format \"{{`{{ (index .Mounts 1).Source }}`}}\"",
         returnStdout: true,
@@ -20,25 +19,30 @@ node('docker') {
         returnStdout: true,
     ).trim()
     HOST_WORKSPACE = HOST_MOUNT + (env.WORKSPACE - CTR_MOUNT)
+
+    stage('Checkout') {
+        checkout scm
+    }
+
     withEnv([
         "COMMIT_SHA=${env.ghprbActualCommit}",
         "IMAGE_TAG=${env.ghprbActualCommit.substring(0,8)}",
         "PROJECT_NAME={{Name}}-${env.BUILD_NUMBER}",
         "ROOTDIR=${HOST_WORKSPACE}"]) {
         try {
-            stage('Run service tests') {
+            stage('Unit tests') {
                 sh("${MAKE} unit-test")
             }
 
-            stage('Build service image') {
+            stage('Build image') {
                 sh("${MAKE} build")
             }
 
-            stage('Run service api tests') {
+            stage('API tests') {
                 sh("${MAKE} api-test")
             }
 
-            stage('Publish test reports') {
+            stage('Validate test results') {
                 junit "**/junit.xml"
                 step([
                     $class: 'CoberturaPublisher',
@@ -64,7 +68,7 @@ node('docker') {
             def pubSteps = [:]
             for (int i = 0; i < global.PUBLISHERS.size(); i++) {
                 def registry = "${global.PUBLISHERS[i]}"
-                def stepName  = "publishing image to [${[i]}] ${registry}"
+                def stepName  = "publishing image to [${i}] ${registry}"
                 pubSteps[stepName] = {
                     sh("${MAKE} push REGISTRY=${registry}")
                 }
@@ -72,10 +76,10 @@ node('docker') {
             parallel pubSteps
         }
 
-        stage('Promote to staging') {
-            sh("${MAKE} version.yaml REGISTRY=${global.PUBLISHER_STAGING}")
+        stage('Acceptance tests') {
+            sh("${MAKE} ci/version.yml REGISTRY=${global.PUBLISHER_STAGING}")
             build job: env.GLOBAL_ACCEPTANCE_JOB, parameters: [
-                text(name: 'VERSION', value: readFile('version.yaml')),
+                text(name: 'VERSION', value: readFile('ci/version.yml')),
                 text(name: 'OVERRIDE_BUILD_ID', value:"{{Name}} PR#${ghprbPullId}")
             ]
         }

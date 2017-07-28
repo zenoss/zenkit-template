@@ -21,7 +21,6 @@ DOCKER_COMPOSE_BASE  := $(DOCKER_COMPOSE)
 ifdef PROJECT_NAME
 DOCKER_COMPOSE_BASE  += -p $(PROJECT_NAME)
 endif
-DOCKER_COMPOSE_FILES ?= docker-compose.yml api/docker-compose.yml
 
 GOAGEN_CMD           := $(DOCKER_CMD) $(GOAGEN)
 GLIDE                := $(shell command -v glide 2> /dev/null)
@@ -69,11 +68,24 @@ resources/app/%.go: $(DESIGN) | $(GOAGEN)
 resources/%.go: $(DESIGN) | $(GOAGEN)
 	@$(GOAGEN_CMD) controller --regen --pkg resources -o resources -d $(DESIGNPKG)
 
+define HOOKS_DOCKER_COMPOSE_YAML
+version: "3.3"
+services:
+    api-test:
+        image: $(BUILD_IMG)
+    depends_on:
+	    - {{Name}}
+endef
+
+hooks/docker-compose.yml: export HOOKS_DOCKER_COMPOSE_YAML:=$(HOOKS_DOCKER_COMPOSE_YAML)
+hooks/docker-compose.yml:
+	echo "$$HOOKS_DOCKER_COMPOSE_YAML" > hooks/docker-compose.yml
+
 ifndef GINKGO
-api/%_hooks: api/%_hooks.go
+hooks/%_hooks: api/%_hooks.go
 	@$(DOCKER_CMD) go build -o $@ $<
 else
-api/%_hooks: api/%_hooks.go
+hooks/%_hooks: api/%_hooks.go
 	@go build -o $@ $<
 endif
 
@@ -113,30 +125,37 @@ unit-test:
 	@gocov convert $(COVERAGE_PROFILE) | gocov-xml > $(COVERAGE_XML)
 endif
 
+DOCKER_COMPOSE_FILES ?= docker-compose.yml hooks/docker-compose.yml
+HOOK_FILES           ?= hooks/{{Name}}_hooks
+
 .PHONY: api-test-containerized
-api-test-containerized: DOCKER_CMD:=$(DOCKER_COMPOSE_BASE) $(addprefix -f ,$(DOCKER_COMPOSE_FILES)) run $(DOCKER_PARAMS) api
-api-test-containerized: $(DOCKER_COMPOSE_FILES) api/{{Name}}_hooks
+api-test-containerized: DOCKER_CMD := $(DOCKER_COMPOSE_BASE) $(addprefix -f ,$(DOCKER_COMPOSE_FILES)) run $(DOCKER_PARAMS) api-test
+api-test-containerized: $(DOCKER_COMPOSE_FILES) $(HOOK_FILES)
 	@$(DOCKER_CMD) dredd ./swagger/swagger.yaml {{Name}}:{{Port}} \
-		-a go -f api/{{Name}}_hooks \
+		-a go -f hooks/*_hooks \
 		-r junit -o api/junit.xml
 
 .PHONY: api-test
-api-test: DOCKER_COMPOSE_FILES:=docker-compose.yml api/docker-compose.yml
 api-test: api-test-containerized
 
 .PHONY: test
-test: unit-test api-test
+test: unit-test
 
 .PHONY: clean
 clean:
-	rm -f resources/controller_reg.go
-	rm -rf resources/app
-	rm -rf swagger
+	rm -f **/junit.xml
+	rm -f **/*.coverprofile
+	rm -f hooks/*_hooks
+	rm -f {hooks,ci}/docker-compose.yml
+	rm -f ci/version.yml
 	rm -rf $(COVERAGE_DIR)
 	$(DOCKER_COMPOSE_BASE) down
 
 .PHONY: mrclean
 mrclean: clean
+	rm -f resources/controller_reg.go
+	rm -rf resources/app
+	rm -rf swagger
 	rm -rf glide.lock
 	rm -rf vendor
 
