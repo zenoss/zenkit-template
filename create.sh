@@ -4,6 +4,6 @@ docker run --rm -it \
 	-w /go/src/${PWD#$GOPATH/src/} \
 	-e LOCAL_USER_ID=$(id -u) \
 	-e IN_DOCKER=1 \
-	zenoss/zenkit-build:1.1 \
+	zenoss/zenkit-build:1.3 \
 	/usr/local/bin/create-zenkit.sh $1
 (cd $1; make)
