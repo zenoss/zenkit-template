@@ -11,7 +11,7 @@
 *.test
 
 # Output of the go coverage tools
-*.coverprofile
+**/*.coverprofile
 *.out
 
 # Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
@@ -19,6 +19,4 @@
 coverage/
 
 # JUnit test output
-junit.xml
-
-version.yaml
+**/junit.xml
