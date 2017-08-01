@@ -1,7 +1,8 @@
 {{ $pkg := print ((print (env "GOPATH") "/src/") | trimPrefix (env "PWD")) "/" Name -}}
+include .env
+
 SHELL                := /bin/bash
 ROOTDIR              ?= $(CURDIR)
-ZENKIT_VERSION       := 1.3
 GOLANG               := $(shell command -v go 2> /dev/null)
 GINKGO               := $(shell command -v ginkgo 2> /dev/null)
 GOAGEN               := vendor/github.com/goadesign/goa/goagen/goagen
