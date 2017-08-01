@@ -1,6 +1,5 @@
 DOCKER_COMPOSE_FILES ?= docker-compose.yml hooks/docker-compose.yml ci/docker-compose.yml
 
-include .env
 include Makefile
 
 IMAGE_NAME   := ${SERVICE_IMAGE}:${IMAGE_TAG}
