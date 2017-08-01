@@ -10,6 +10,9 @@ import (
 	"github.com/zenoss/zenkit"
 )
 
+// SwaggerJSONAsset contains the path of the swagger JSON asset
+var SwaggerJSONAsset = "swagger/swagger.json"
+
 // AdminController implements the admin resource.
 type AdminController struct {
 	*goa.Controller
@@ -33,7 +36,7 @@ func (c *AdminController) Metrics(ctx *app.MetricsAdminContext) error {
 		encoder.SetIndent("", "    ")
 	}
 	if err := encoder.Encode(registry); err != nil {
-		return err
+		return ctx.InternalServerError()
 	}
 	// AdminController_Metrics: end_implement
 	return nil
@@ -75,9 +78,9 @@ func (c *AdminController) Swagger(ctx *app.SwaggerAdminContext) error {
 // SwaggerJSON runs the swagger.json action.
 func (c *AdminController) SwaggerJSON(ctx *app.SwaggerJSONAdminContext) error {
 	// AdminController_SwaggerJSON: start_implement
-	data, err := swagger.Asset("swagger/swagger.json")
+	data, err := swagger.Asset(SwaggerJSONAsset)
 	if err != nil {
-		return err
+		return ctx.InternalServerError()
 	}
 	return ctx.OK(data)
 	// AdminController_SwaggerJSON: end_implement
