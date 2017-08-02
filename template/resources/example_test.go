@@ -26,18 +26,28 @@ var _ = Describe("Example", func() {
 		ctx = context.Background()
 	})
 
-	It("should say hello to a normal user", func() {
-		var (
-			name     = "tester"
-			expected = fmt.Sprintf("Hello, %s!", name)
-		)
-		_, greeting := test.GreetExampleOK(t, ctx, svc, ctrl, name)
-		Ω(greeting.Greeting).Should(Equal(expected))
+	Context("when the Greet resource is requested", func() {
+		It("should say hello to a normal user", func() {
+			var (
+				name     = "tester"
+				expected = fmt.Sprintf("Hello, %s!", name)
+			)
+			_, greeting := test.GreetExampleOK(t, ctx, svc, ctrl, name)
+			Expect(greeting.Greeting).Should(Equal(expected))
+		})
+
+		It("should not say hello to Newman", func() {
+			var name = "newman"
+			test.GreetExampleBadRequest(t, ctx, svc, ctrl, name)
+		})
 	})
 
-	It("should not say hello to Newman", func() {
-		var name = "newman"
-		test.GreetExampleBadRequest(t, ctx, svc, ctrl, name)
+	Context("when the Add resource is requested", func() {
+		It("should add properly", func() {
+			_, sum := test.AddExampleOK(t, ctx, svc, ctrl, 9000, 1)
+			// it should be over 9000, obviously
+			Expect(sum.Total).Should(Equal(9001))
+		})
 	})
 
 })

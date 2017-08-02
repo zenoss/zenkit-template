@@ -25,11 +25,13 @@ var _ = Resource("admin", func() {
 			})
 		})
 		Response(OK, "application/json")
+		Response(InternalServerError)
 	})
 	Action("swagger.json", func() {
 		Description("Retrieve Swagger spec as JSON")
 		Routing(GET("/swagger/swagger.json"))
 		Response(OK, "application/json")
+		Response(InternalServerError)
 	})
 	Action("swagger", func() {
 		Description("Display Swagger using ReDoc")
