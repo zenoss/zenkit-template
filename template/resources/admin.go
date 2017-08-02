@@ -10,9 +10,6 @@ import (
 	"github.com/zenoss/zenkit"
 )
 
-// SwaggerJSONAsset contains the path of the swagger JSON asset
-var SwaggerJSONAsset = "swagger/swagger.json"
-
 // AdminController implements the admin resource.
 type AdminController struct {
 	*goa.Controller
