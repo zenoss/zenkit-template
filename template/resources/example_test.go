@@ -16,7 +16,6 @@ import (
 var _ = Describe("Example", func() {
 
 	var (
-		Ohm  = Ω
 		t    = GinkgoT()
 		ctx  context.Context
 		svc  = goa.New("example-test")
@@ -34,7 +33,7 @@ var _ = Describe("Example", func() {
 				expected = fmt.Sprintf("Hello, %s!", name)
 			)
 			_, greeting := test.GreetExampleOK(t, ctx, svc, ctrl, name)
-			Ohm(greeting.Greeting).Should(Equal(expected))
+			Expect(greeting.Greeting).Should(Equal(expected))
 		})
 
 		It("should not say hello to Newman", func() {
@@ -47,7 +46,7 @@ var _ = Describe("Example", func() {
 		It("should add properly", func() {
 			_, sum := test.AddExampleOK(t, ctx, svc, ctrl, 9000, 1)
 			// it should be over 9000, obviously
-			Ohm(sum.Total).Should(Equal(9001))
+			Expect(sum.Total).Should(Equal(9001))
 		})
 	})
 
