@@ -4,12 +4,14 @@ package resources_test
 import (
 	"context"
 	"fmt"
+	"math/rand"
 
 	"github.com/goadesign/goa"
 	. "{{$pkg}}/resources"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega/gbytes"
 	"{{$pkg}}/resources/app/test"
 )
 
@@ -47,6 +49,19 @@ var _ = Describe("Example", func() {
 			_, sum := test.AddExampleOK(t, ctx, svc, ctrl, 9000, 1)
 			// it should be over 9000, obviously
 			Expect(sum.Total).Should(Equal(9001))
+		})
+	})
+
+	Context("when the Words resource is requested", func() {
+		It("should stream the number of words specified", func() {
+			count := rand.Intn(10) + 1
+			conn, err := test.WordsExampleWSTestHelper(t, ctx, svc, ctrl, count, 5)
+			Ω(err).ShouldNot(HaveOccurred())
+			defer conn.Close()
+			buf := gbytes.BufferReader(conn.UnderlyingConn())
+			for i := 0; i < count; i++ {
+				Eventually(buf).Should(gbytes.Say("word"))
+			}
 		})
 	})
 

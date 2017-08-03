@@ -3,12 +3,15 @@ package resources
 
 import (
 	"fmt"
+	"io"
 	"strings"
+	"time"
 
 	"github.com/goadesign/goa"
 	metrics "github.com/rcrowley/go-metrics"
 	"{{$pkg}}/resources/app"
 	"github.com/zenoss/zenkit"
+	"golang.org/x/net/websocket"
 )
 
 // ExampleController implements the example resource.
@@ -55,4 +58,33 @@ func (c *ExampleController) Greet(ctx *app.GreetExampleContext) error {
 	// ExampleController_Greet: end_implement
 	res := &app.X{{Name | title}}Greeting{}
 	return ctx.OK(res)
+}
+
+// Words runs the words action.
+func (c *ExampleController) Words(ctx *app.WordsExampleContext) error {
+       c.WordsWSHandler(ctx).ServeHTTP(ctx.ResponseWriter, ctx.Request)
+       return nil
+}
+
+// WordsWSHandler establishes a websocket connection to run the words action.
+func (c *ExampleController) WordsWSHandler(ctx *app.WordsExampleContext) websocket.Handler {
+       return func(ws *websocket.Conn) {
+               // ExampleController_Words: start_implement
+
+               fmt.Fprintf(ws, "Here are %d words\n\n", ctx.Count)
+               time.Sleep(time.Millisecond * time.Duration(ctx.Delay))
+
+               for i := 0; i < ctx.Count; i++ {
+                       fmt.Fprintln(ws, "word")
+                       time.Sleep(time.Millisecond * time.Duration(ctx.Delay))
+               }
+
+               fmt.Fprintln(ws, "Done!")
+               return
+
+               // ExampleController_Words: end_implement
+               ws.Write([]byte("words example"))
+               // Dummy echo websocket server
+               io.Copy(ws, ws)
+       }
 }
