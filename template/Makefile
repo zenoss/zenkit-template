@@ -62,7 +62,7 @@ swagger/swagger.go: $(DESIGN) | $(GOAGEN)
 	@$(GOBINDATA) -ignore='swagger\.go' -pkg swagger -o $@ swagger/
 
 resources/controller_reg.go: $(DESIGN) | $(GOAGEN)
-	@$(GOAGEN_CMD) gen -o resources --pkg-path=github.com/zenoss/zenkit/generate -d $(DESIGNPKG)
+	@$(GOAGEN_CMD) gen -o resources --pkg-path=github.com/zenoss/zenkit/generator/controllerreg -d $(DESIGNPKG)
 
 resources/app/%.go: $(DESIGN) | $(GOAGEN)
 	@$(GOAGEN_CMD) app -o resources -d $(DESIGNPKG)
