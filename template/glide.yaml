@@ -4,7 +4,7 @@ ignore:
   - {{$pkg}}
 import:
 - package: github.com/goadesign/goa
-  version: 7a9154a8a14a029d63bae4d11e13881cdaaa2c50
+  version: 5c08eed86c3891d44fe5e6da7d6567ccf994af66
   subpackages:
   - design
   - design/apidsl
@@ -17,9 +17,6 @@ import:
 - package: gopkg.in/yaml.v2
 - package: github.com/spf13/cobra
 - package: github.com/sirupsen/logrus
-- package: github.com/Sirupsen/logrus
-  repo: git@github.com:/sirupsen/logrus
-  vcs: git
 - package: github.com/zenoss/zenkit
 - package: github.com/tylerb/graceful
 - package: github.com/rcrowley/go-metrics
