@@ -16,8 +16,10 @@ import:
   - go/ast/astutil
 - package: gopkg.in/yaml.v2
 - package: github.com/spf13/cobra
+- package: github.com/sirupsen/logrus
 - package: github.com/Sirupsen/logrus
-  version: ~0.11.5
+  repo: git@github.com:/sirupsen/logrus
+  vcs: git
 - package: github.com/zenoss/zenkit
 - package: github.com/tylerb/graceful
 - package: github.com/rcrowley/go-metrics
@@ -25,3 +27,4 @@ import:
 - package: github.com/onsi/gomega
 - package: github.com/cenkalti/backoff
 - package: github.com/snikch/goodman
+
