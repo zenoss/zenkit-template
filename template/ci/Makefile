@@ -35,7 +35,7 @@ push: REMOTE_IMAGE_VALID IMAGE_NAME_VALID
 define VERSION_YAML
 version: "3.2"
 services:
-	$${SERVICE_NAME}:
+    $${SERVICE_NAME}:
         image: $${ZING_REGISTRY}/$(IMAGE_NAME)
 endef
 
