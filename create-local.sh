@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-if [ ! -z ROOTDIR ]; then
-    ROOTDIR=$PWD
-fi
+: ${ROOTDIR:=$PWD}
 
 docker run --rm -i \
 	-v $GOPATH/src:/go/src \
