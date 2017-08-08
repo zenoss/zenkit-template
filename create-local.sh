@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-docker run --rm -it \
+docker run --rm -i \
 	-v $GOPATH/src:/go/src \
 	-w /go/src/${PWD#$GOPATH/src/} \
 	-e LOCAL_USER_ID=$(id -u) \
