@@ -8,4 +8,4 @@ docker run --rm \
 	-e IN_DOCKER=1 \
 	zenoss/zenkit-build:1.5.1 \
 	/usr/local/bin/create-zenkit-local.sh $1
-(cd $1; make all)
+(cd $1; make)

@@ -38,7 +38,7 @@ endif
 default: app init
 
 .PHONY: all
-all: default clean unit-test build api-test down
+all: default clean unit-test build api-test
 
 .PHONY: docker-compose
 docker-compose: $(DOCKER_COMPOSE)
