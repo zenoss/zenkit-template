@@ -147,6 +147,7 @@ api-test: api-test-containerized
 test: unit-test
 
 .PHONY: down
+down: $(DOCKER_COMPOSE)
 	$(DOCKER_COMPOSE_BASE) down
 
 .PHONY: clean
