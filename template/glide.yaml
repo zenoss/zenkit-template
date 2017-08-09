@@ -4,7 +4,7 @@ ignore:
   - {{$pkg}}
 import:
 - package: github.com/goadesign/goa
-  version: 5c08eed86c3891d44fe5e6da7d6567ccf994af66
+  version: 7f9c160662a1933b92f7e94987c228d4c1d6c754
   subpackages:
   - design
   - design/apidsl
@@ -14,6 +14,9 @@ import:
 - package: golang.org/x/tools
   subpackages:
   - go/ast/astutil
+- package: golang.org/x/net
+  subpackages:
+  - websocket
 - package: gopkg.in/yaml.v2
 - package: github.com/spf13/cobra
 - package: github.com/sirupsen/logrus
@@ -24,4 +27,5 @@ import:
 - package: github.com/onsi/gomega
 - package: github.com/cenkalti/backoff
 - package: github.com/snikch/goodman
-
+- package: github.com/spf13/viper
+- package: github.com/fsnotify/fsnotify

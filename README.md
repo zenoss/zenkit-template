@@ -44,18 +44,9 @@ It's as easy as 1-2-3!
 
        git checkout -b improvements
 
-2. Get boilr to test your changes locally
+2. Run the create-local.sh script to test your changes (from the parent
+   directory)
 
-       go get github.com/tmrts/boilr
+       zenkit-template/create-local.sh my-test-service
 
-3. Save your template with boilr
-
-       boilr template save $GOPATH/src/github.com/zenoss/zenkit-template improvementstemplate
-
-4. Use your template
-
-       boilr template use improvementstemplate testimprovements
-
-   Make sure your service name matches the target-dir passed to `boilr`!
-
-5. Test your newly deployed microservice, and if it looks good, open a pull request!
+3. Test your newly deployed microservice, and if it looks good, open a pull request!

@@ -37,6 +37,9 @@ endif
 .PHONY: default
 default: app init
 
+.PHONY: all
+all: default clean unit-test build api-test
+
 .PHONY: docker-compose
 docker-compose: $(DOCKER_COMPOSE)
 
@@ -143,15 +146,17 @@ api-test: api-test-containerized
 .PHONY: test
 test: unit-test
 
+.PHONY: down
+down: $(DOCKER_COMPOSE)
+	$(DOCKER_COMPOSE_BASE) down
+
 .PHONY: clean
-clean:
+clean:: down
 	rm -f **/junit.xml
 	rm -f **/*.coverprofile
 	rm -f hooks/*_hooks
-	rm -f {hooks,ci}/docker-compose.yml
-	rm -f ci/version.yml
+	rm -f hooks/docker-compose.yml
 	rm -rf $(COVERAGE_DIR)
-	$(DOCKER_COMPOSE_BASE) down
 
 .PHONY: mrclean
 mrclean: clean
