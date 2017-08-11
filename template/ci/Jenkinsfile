@@ -10,15 +10,6 @@ node('docker') {
     ]) {
         global = load env.GLOBAL
     }
-    HOST_MOUNT = sh(
-        script: "hostname | xargs -I@ docker inspect @ --format \"{{`{{ (index .Mounts 1).Source }}`}}\"",
-        returnStdout: true,
-    ).trim()
-    CTR_MOUNT = sh(
-        script: "hostname | xargs -I@ docker inspect @ --format \"{{`{{ (index .Mounts 1).Destination }}`}}\"",
-        returnStdout: true,
-    ).trim()
-    HOST_WORKSPACE = HOST_MOUNT + (env.WORKSPACE - CTR_MOUNT)
 
     stage('Checkout') {
         checkout scm
@@ -28,7 +19,7 @@ node('docker') {
         "COMMIT_SHA=${env.ghprbActualCommit}",
         "IMAGE_TAG=${env.ghprbActualCommit.substring(0,8)}",
         "PROJECT_NAME={{Name}}-${env.BUILD_NUMBER}",
-        "ROOTDIR=${HOST_WORKSPACE}"]) {
+        "ROOTDIR=${global.HOST_WORKSPACE}"]) {
         try {
             stage('Unit tests') {
                 ansiColor('xterm') {
@@ -59,6 +50,7 @@ node('docker') {
                     onlyStable: false,
                     sourceEncoding: 'ASCII',
                     zoomCoverageChart: false,
+                    lineCoverageTargets: '100.0, 90.0, 50.0',
                 ])  
             }
         } finally {
