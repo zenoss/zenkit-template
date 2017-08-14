@@ -29,3 +29,5 @@ import:
 - package: github.com/snikch/goodman
 - package: github.com/spf13/viper
 - package: github.com/fsnotify/fsnotify
+- package: github.com/gorilla/websocket
+- package: github.com/posener/wstest
