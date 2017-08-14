@@ -1,6 +1,8 @@
 package resources_test
 
 import (
+	"math/rand"
+
 	. "github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/reporters"
 	. "github.com/onsi/gomega"
@@ -11,5 +13,6 @@ import (
 func TestResources(t *testing.T) {
 	RegisterFailHandler(Fail)
 	junitReporter := reporters.NewJUnitReporter("junit.xml")
+	rand.Seed(GinkgoRandomSeed())
 	RunSpecsWithDefaultAndCustomReporters(t, "{{Name | title}} Resources Suite", []Reporter{junitReporter})
 }
