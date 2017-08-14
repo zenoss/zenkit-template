@@ -51,7 +51,7 @@ $(DOCKER_COMPOSE):
 
 glide.lock: glide.yaml
 	@mkdir -p .glide
-	@$(GLIDE) update --strip-vendor
+	@$(GLIDE) update --force --strip-vendor
 
 vendor: glide.lock
 	@mkdir -p .glide
@@ -69,6 +69,9 @@ resources/controller_reg.go: $(DESIGN) | $(GOAGEN)
 
 resources/app/%.go: $(DESIGN) | $(GOAGEN)
 	@$(GOAGEN_CMD) app -o resources -d $(DESIGNPKG)
+
+resources/app/test/websocket_helpers.go: $(DESIGN) | $(GOAGEN)
+	@$(GOAGEN_CMD) gen -o resources --pkg-path=github.com/zenoss/zenkit/generator/wstesthelper -d $(DESIGNPKG)
 
 resources/%.go: $(DESIGN) | $(GOAGEN)
 	@$(GOAGEN_CMD) controller --regen --pkg resources -o resources -d $(DESIGNPKG)
@@ -95,7 +98,7 @@ hooks/%_hooks: hooks/%_hooks.go
 endif
 
 .PHONY: app
-app: swagger/swagger.go resources/controller_reg.go resources/admin.go resources/app/controllers.go
+app: swagger/swagger.go resources/admin.go resources/app/controllers.go resources/controller_reg.go  resources/app/test/websocket_helpers.go
 
 .PHONY: build
 build: export COMMIT_SHA ?= $(shell git rev-parse HEAD)

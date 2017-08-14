@@ -17,10 +17,11 @@ import:
 - package: golang.org/x/net
   subpackages:
   - websocket
+- package: github.com/zenoss/zenkit
+  ref: master
 - package: gopkg.in/yaml.v2
 - package: github.com/spf13/cobra
 - package: github.com/sirupsen/logrus
-- package: github.com/zenoss/zenkit
 - package: github.com/tylerb/graceful
 - package: github.com/rcrowley/go-metrics
 - package: github.com/onsi/ginkgo
@@ -29,3 +30,5 @@ import:
 - package: github.com/snikch/goodman
 - package: github.com/spf13/viper
 - package: github.com/fsnotify/fsnotify
+- package: github.com/gorilla/websocket
+- package: github.com/posener/wstest
