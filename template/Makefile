@@ -51,7 +51,7 @@ $(DOCKER_COMPOSE):
 
 glide.lock: glide.yaml
 	@mkdir -p .glide
-	@$(GLIDE) update --strip-vendor
+	@$(GLIDE) update --force --strip-vendor
 
 vendor: glide.lock
 	@mkdir -p .glide
