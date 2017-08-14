@@ -62,6 +62,7 @@ var _ = Describe("Example", func() {
 			for i := 0; i < count; i++ {
 				Eventually(buf).Should(gbytes.Say("word"))
 			}
+			Eventually(buf).Should(gbytes.Say("Done!"))
 		})
 	})
 
