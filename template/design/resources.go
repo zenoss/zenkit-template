@@ -39,8 +39,12 @@ var _ = Resource("example", func() {
 		Description("Streams the word 'word' over a websocket")
 		Routing(GET("/words"))
 		Params(func() {
-			Param("count", Integer, "Number of times to say 'word'")
-			Param("delay", Integer, "Milliseconds between each word")
+			Param("count", Integer, "Number of times to say 'word'", func() {
+				Metadata("swagger:extension:x-example", "10")
+			})
+			Param("delay", Integer, "Milliseconds between each word", func() {
+				Metadata("swagger:extension:x-example", "100")
+			})
 			Required("count", "delay")
 		})
 		Response(SwitchingProtocols)
