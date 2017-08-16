@@ -32,8 +32,13 @@ node('docker') {
             }
 
             stage('API tests') {
-                ansiColor('xterm') {
-                    sh("${MAKE} api-test")
+                try {
+                    ansiColor('xterm') {
+                        sh("${MAKE} api-test")
+                    }
+                } catch (Exception e) {
+                    sh("docker-compose logs {{Name}}")
+                    throw e
                 }
             }
 
@@ -51,7 +56,7 @@ node('docker') {
                     sourceEncoding: 'ASCII',
                     zoomCoverageChart: false,
                     lineCoverageTargets: '100.0, 90.0, 50.0',
-                ])  
+                ])
             }
         } finally {
             stage ('Clean test environment') {

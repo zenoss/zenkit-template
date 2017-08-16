@@ -12,6 +12,7 @@ var _ = Resource("admin", func() {
 	})
 	BasePath("/_admin")
 	Action("ping", func() {
+		NoSecurity()
 		Description("Respond with a 200 if the service is available")
 		Routing(HEAD("/ping"), GET("/ping"))
 		Response(OK)
