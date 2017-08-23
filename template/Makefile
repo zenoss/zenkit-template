@@ -11,7 +11,8 @@ DESIGNPKG            := $(PACKAGE)/design
 DESIGN 	             := $(shell find design -name \*.go)
 DOCKER_COMPOSE       := /usr/local/bin/docker-compose
 LOCAL_USER_ID        := $(shell id -u)
-BUILD_IMG            := zenoss/zenkit-build:$(ZENKIT_VERSION)
+ZENKIT_BUILD_VERSION := 1.5.1
+BUILD_IMG            := zenoss/zenkit-build:$(ZENKIT_BUILD_VERSION)
 COVERAGE_DIR         := coverage
 
 DOCKER_PARAMS        := --rm -v $(ROOTDIR):/go/src/$(PACKAGE):rw \
