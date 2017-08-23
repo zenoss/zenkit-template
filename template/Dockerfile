@@ -1,7 +1,7 @@
 {{ $pkg := print ((print (env "GOPATH") "/src/") | trimPrefix (env "PWD")) "/" Name -}}
-ARG ZENKIT_VERSION
+ARG ZENKIT_BUILD_VERSION=1.5.1
 
-FROM zenoss/zenkit-build:${ZENKIT_VERSION}
+FROM zenoss/zenkit-build:${ZENKIT_BUILD_VERSION}
 
 COPY . /go/src/{{$pkg}}
 WORKDIR /go/src/{{$pkg}}/{{Name}}
