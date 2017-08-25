@@ -56,7 +56,7 @@ glide.lock: glide.yaml
 
 vendor: glide.lock
 	@mkdir -p .glide
-	@$(GLIDE) install --force --strip-vendor
+	@$(GLIDE) install --force
 
 $(GOAGEN): vendor
 	@$(DOCKER_CMD) /bin/bash -c 'cd $(@D) && go build'
