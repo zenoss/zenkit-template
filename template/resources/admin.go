@@ -53,7 +53,7 @@ func (c *AdminController) Swagger(ctx *app.SwaggerAdminContext) error {
 	return ctx.OK([]byte(`<!DOCTYPE html
 <html>
   <head>
-    <title>{{Name | title}} API</title>
+    <title>{{replace Name "-" " " -1 | title}} API</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
       body {

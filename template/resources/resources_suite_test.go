@@ -14,5 +14,5 @@ func TestResources(t *testing.T) {
 	RegisterFailHandler(Fail)
 	junitReporter := reporters.NewJUnitReporter("junit.xml")
 	rand.Seed(GinkgoRandomSeed())
-	RunSpecsWithDefaultAndCustomReporters(t, "{{Name | title}} Resources Suite", []Reporter{junitReporter})
+	RunSpecsWithDefaultAndCustomReporters(t, "{{camel Name "-" | title}} Resources Suite", []Reporter{junitReporter})
 }
