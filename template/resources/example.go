@@ -33,13 +33,13 @@ func (c *ExampleController) Add(ctx *app.AddExampleContext) error {
 	total := ctx.A + ctx.B
 
 	// Keep a running total for no reason
-	ctr := metrics.GetOrRegisterCounter("{{Name}}.Add.total", zenkit.ContextMetrics(ctx))
+	ctr := metrics.GetOrRegisterCounter("{{camel Name "-" | title}}.Add.total", zenkit.ContextMetrics(ctx))
 	ctr.Inc(int64(total))
 
-	return ctx.OK(&app.X{{Name | title}}Sum{Total: total})
+	return ctx.OK(&app.X{{camel Name "-" | title}}Sum{Total: total})
 
 	// ExampleController_Add: end_implement
-	res := &app.X{{Name | title}}Sum{}
+	res := &app.X{{camel Name "-" | title}}Sum{}
 	return ctx.OK(res)
 }
 
@@ -53,10 +53,10 @@ func (c *ExampleController) Greet(ctx *app.GreetExampleContext) error {
 		return ctx.BadRequest()
 	}
 	result := fmt.Sprintf("Hello, %s!", ctx.Name)
-	return ctx.OK(&app.X{{Name | title}}Greeting{Greeting: result})
+	return ctx.OK(&app.X{{camel Name "-" | title}}Greeting{Greeting: result})
 
 	// ExampleController_Greet: end_implement
-	res := &app.X{{Name | title}}Greeting{}
+	res := &app.X{{camel Name "-" | title}}Greeting{}
 	return ctx.OK(res)
 }
 

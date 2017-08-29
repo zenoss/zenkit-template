@@ -27,7 +27,7 @@ func main() {
 		a, _ := strconv.Atoi(parts[2])
 		b, _ := strconv.Atoi(parts[3])
 
-		actual := &app.X{{Name | title}}Sum{}
+		actual := &app.X{{camel Name "-" | title}}Sum{}
 		_ = json.Unmarshal([]byte(t.Real.Body), actual)
 
 		if total := a + b; total != actual.Total {

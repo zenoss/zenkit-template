@@ -5,7 +5,7 @@ import (
 	"github.com/zenoss/zenkit"
 )
 
-var _ = API("{{Name}}", func() {
+var _ = API("{{camel Name "-" | title}}", func() {
 	Title("{{Title}}")
 	Description("{{Description}}")
 	Scheme("http")
