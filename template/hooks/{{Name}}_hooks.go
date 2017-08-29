@@ -21,6 +21,16 @@ func main() {
 		t.Skip = strings.HasPrefix(t.Name, "admin >")
 	})
 
+	// skip the 400 result from the example
+	h.Before("example > /hello/{name} > greet example > 400 > application/x.{{Name}}.greeting+json", func(t *trans.Transaction) {
+		t.Skip = true
+	})
+
+	// skip the websocket example
+	h.Before("example > /words > words example > 101 > application/json", func(t *trans.Transaction) {
+		t.Skip = true
+	})
+
 	// a detailed example
 	h.After("example > /add/{a}/{b} > add example > 200 > application/x.tester.sum+json", func(t *trans.Transaction) {
 		parts := strings.Split(t.FullPath, "/")
