@@ -54,9 +54,18 @@ glide.lock: glide.yaml
 	@mkdir -p .glide
 	@$(GLIDE) update --force --strip-vendor
 
+ifeq "$(FORCE)" "1"
+vendor: clean-glide-cache
+endif
 vendor: glide.lock
 	@mkdir -p .glide
 	@$(GLIDE) install --force --strip-vendor
+
+.PHONY: clean-glide-cache
+clean-glide-cache:
+	rm -f glide.lock
+	rm -rf .glide
+	rm -rf ${HOME}/.glide
 
 $(GOAGEN): vendor
 	@$(DOCKER_CMD) /bin/bash -c 'cd $(@D) && go build'
