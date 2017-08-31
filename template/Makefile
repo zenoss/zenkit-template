@@ -54,7 +54,7 @@ glide.lock: glide.yaml
 	@mkdir -p .glide
 	@$(GLIDE) update --force --strip-vendor
 
-ifndef FORCE
+ifeq "$(FORCE)" "1"
 vendor: clean-glide-cache
 endif
 vendor: glide.lock
