@@ -20,3 +20,7 @@ coverage/
 
 # JUnit test output
 **/junit.xml
+
+# IntelliJ files
+.idea
+*.iml
