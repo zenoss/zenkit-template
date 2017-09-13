@@ -74,9 +74,6 @@ swagger/swagger.go: $(DESIGN) | $(GOAGEN)
 	@$(GOAGEN_CMD) swagger -d $(DESIGNPKG)
 	@$(GOBINDATA) -ignore='swagger\.go' -pkg swagger -o $@ swagger/
 
-client/%.go: $(DESIGN) | $(GOAGEN)
-	@$(GOAGEN_CMD) client --notool -d $(DESIGNPKG)
-
 resources/controller_reg.go: $(DESIGN) | $(GOAGEN)
 	@$(GOAGEN_CMD) gen -o resources --pkg-path=github.com/zenoss/zenkit/generator/controllerreg -d $(DESIGNPKG)
 
@@ -88,6 +85,9 @@ resources/app/test/websocket_helpers.go: $(DESIGN) | $(GOAGEN)
 
 resources/%.go: $(DESIGN) | $(GOAGEN)
 	@$(GOAGEN_CMD) controller --regen --pkg resources -o resources -d $(DESIGNPKG)
+
+client/%.go: $(DESIGN) | $(GOAGEN)
+	@$(GOAGEN_CMD) client --notool -d $(DESIGNPKG)
 
 define HOOKS_DOCKER_COMPOSE_YAML
 version: "3.3"
@@ -111,7 +111,7 @@ hooks/%_hooks: hooks/%_hooks.go
 endif
 
 .PHONY: app
-app: swagger/swagger.go client/client.go resources/admin.go resources/app/controllers.go resources/controller_reg.go  resources/app/test/websocket_helpers.go
+app: swagger/swagger.go resources/admin.go resources/app/controllers.go resources/controller_reg.go  resources/app/test/websocket_helpers.go client/client.go
 
 .PHONY: build
 build: export COMMIT_SHA ?= $(shell git rev-parse HEAD)

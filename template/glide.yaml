@@ -4,7 +4,9 @@ ignore:
   - {{$pkg}}
 import:
 - package: github.com/goadesign/goa
-  version: 94c5f00a452130a8732b2e3348eb9259be23a224
+  # version: 94c5f00a452130a8732b2e3348eb9259be23a224
+  repo: https://github.com/smousa/goa
+  ref: fix-ws-template
   subpackages:
   - design
   - design/apidsl
