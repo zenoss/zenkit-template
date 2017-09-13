@@ -86,6 +86,9 @@ resources/app/test/websocket_helpers.go: $(DESIGN) | $(GOAGEN)
 resources/%.go: $(DESIGN) | $(GOAGEN)
 	@$(GOAGEN_CMD) controller --regen --pkg resources -o resources -d $(DESIGNPKG)
 
+client/%.go: $(DESIGN) | $(GOAGEN)
+	@$(GOAGEN_CMD) client --notool -d $(DESIGNPKG)
+
 define HOOKS_DOCKER_COMPOSE_YAML
 version: "3.3"
 services:
@@ -108,7 +111,7 @@ hooks/%_hooks: hooks/%_hooks.go
 endif
 
 .PHONY: app
-app: swagger/swagger.go resources/admin.go resources/app/controllers.go resources/controller_reg.go  resources/app/test/websocket_helpers.go
+app: swagger/swagger.go resources/admin.go resources/app/controllers.go resources/controller_reg.go  resources/app/test/websocket_helpers.go client/client.go
 
 .PHONY: build
 build: export COMMIT_SHA ?= $(shell git rev-parse HEAD)
@@ -147,11 +150,14 @@ DOCKER_COMPOSE_FILES ?= docker-compose.yml hooks/docker-compose.yml
 HOOK_FILES           ?= hooks/{{Name}}_hooks
 
 .PHONY: api-test-containerized
+ifeq "$(SHOW_NAMES)" "1"
+api-test-containerized: NAMES := --names
+endif
 api-test-containerized: DOCKER_CMD := $(DOCKER_COMPOSE_BASE) $(addprefix -f ,$(DOCKER_COMPOSE_FILES)) run $(DOCKER_PARAMS) api-test
 api-test-containerized: $(DOCKER_COMPOSE_FILES) $(HOOK_FILES)
 	@$(DOCKER_CMD) dredd ./swagger/swagger.yaml {{Name}}:{{Port}} \
 		-a go -f hooks/*_hooks \
-		-r junit -o hooks/junit.xml
+		-r junit -o hooks/junit.xml $(NAMES)
 
 .PHONY: api-test
 api-test: api-test-containerized
@@ -161,7 +167,7 @@ test: unit-test
 
 .PHONY: down
 down: $(DOCKER_COMPOSE)
-	$(DOCKER_COMPOSE_BASE) down
+	$(DOCKER_COMPOSE_BASE) down -v
 
 .PHONY: clean
 clean:: down
