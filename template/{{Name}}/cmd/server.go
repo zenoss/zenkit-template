@@ -14,6 +14,7 @@ import (
 	"{{$pkg}}/resources"
 	"{{$pkg}}/resources/app"
 	"github.com/zenoss/zenkit"
+	"github.com/goadesign/goa/middleware/security/jwt"
 )
 
 // serverCmd represents the server command
