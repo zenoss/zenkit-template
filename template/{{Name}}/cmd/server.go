@@ -34,7 +34,7 @@ var serverCmd = &cobra.Command{
 		if err != nil {
 			logrus.WithField("authfile", filename).WithError(err).Fatal("Unable to get keys for security middleware")
 		}
-		secMW := jwt.New(jwt.NewSimpleResolver(keys), nil, app.NewJWTSecurity())
+		secMW := jwt.New(jwt.NewSimpleResolver(keys), zenkit.DefaultJWTValidation, app.NewJWTSecurity())
 		app.UseJWTMiddleware(service, secMW)
 
 		// Add tracing, if enabled
