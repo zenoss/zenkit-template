@@ -59,7 +59,7 @@ vendor: clean-glide-cache
 endif
 vendor: glide.lock
 	@mkdir -p .glide
-	@$(GLIDE) install --force --strip-vendor
+	@$(GLIDE) install --force
 
 .PHONY: clean-glide-cache
 clean-glide-cache:
