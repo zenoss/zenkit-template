@@ -30,10 +30,11 @@ var serverCmd = &cobra.Command{
 
 		// Add security
 		filename := viper.GetString(zenkit.AuthKeyFileConfig)
-		secMW, err := zenkit.JWTMiddleware(service, filename, zenkit.DefaultJWTValidation, app.NewJWTSecurity())
+		keys, err := zenkit.GetKeysFromFS(service, []string{filename})
 		if err != nil {
-			logrus.WithError(err).Fatal("Unable to initialize security middleware")
+			logrus.WithField("authfile", filename).WithError(err).Fatal("Unable to get keys for security middleware")
 		}
+		secMW := jwt.New(jwt.NewSimpleResolver(keys), nil, app.NewJWTSecurity())
 		app.UseJWTMiddleware(service, secMW)
 
 		// Add tracing, if enabled
