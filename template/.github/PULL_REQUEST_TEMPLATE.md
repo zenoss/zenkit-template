@@ -19,6 +19,7 @@ A few sentences describing the overall goals of the pull request's commits
 
 - [ ] Types and function declarations are commented
 - [ ] Errors are wrapped with user-friendly messages using `github.com/pkg/errors`
+- [ ] 100% code coverage for all packages
 
 ### Configuration
 
