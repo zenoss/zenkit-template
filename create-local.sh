@@ -6,6 +6,6 @@ docker run --rm \
 	-w /go/src/`dirname ${ROOTDIR#$GOPATH/src/}` \
 	-e LOCAL_USER_ID=$(id -u) \
 	-e IN_DOCKER=1 \
-	zenoss/zenkit-build:1.6.0 \
+	zenoss/zenkit-build:1.6.2 \
 	/usr/local/bin/create-zenkit-local.sh $1
 (cd $1; make)

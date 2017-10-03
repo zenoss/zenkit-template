@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/goadesign/goa"
-	metrics "github.com/rcrowley/go-metrics"
 	"{{$pkg}}/resources/app"
-	"github.com/zenoss/zenkit"
+	"github.com/zenoss/zenkit/logging"
+	"github.com/zenoss/zenkit/metrics"
 	"golang.org/x/net/websocket"
 )
 
@@ -27,14 +27,13 @@ func NewExampleController(service *goa.Service) *ExampleController {
 // Add runs the add action.
 func (c *ExampleController) Add(ctx *app.AddExampleContext) error {
 	// ExampleController_Add: start_implement
-	defer zenkit.LogEntryAndExit(ctx)()
-	defer zenkit.MeasureTime(ctx)()
+	defer logging.LogEntryAndExit(ctx)()
+	defer metrics.MeasureTime(ctx)()
 
 	total := ctx.A + ctx.B
 
 	// Keep a running total for no reason
-	ctr := metrics.GetOrRegisterCounter("{{camel Name "-" | title}}.Add.total", zenkit.ContextMetrics(ctx))
-	ctr.Inc(int64(total))
+	metrics.IncrementCounter(ctx, "{{camel Name "-" | title}}.Add.total", 1)
 
 	return ctx.OK(&app.X{{camel Name "-" | title}}Sum{Total: total})
 
@@ -47,8 +46,8 @@ func (c *ExampleController) Add(ctx *app.AddExampleContext) error {
 func (c *ExampleController) Greet(ctx *app.GreetExampleContext) error {
 	// ExampleController_Greet: start_implement
 
-	defer zenkit.LogEntryAndExit(ctx)()
-	defer zenkit.MeasureTime(ctx)()
+	defer logging.LogEntryAndExit(ctx)()
+	defer metrics.MeasureTime(ctx)()
 	if strings.ToLower(ctx.Name) == "newman" {
 		return ctx.BadRequest()
 	}

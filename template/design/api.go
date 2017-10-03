@@ -2,7 +2,7 @@ package design
 
 import (
 	. "github.com/goadesign/goa/design/apidsl"
-	"github.com/zenoss/zenkit"
+	"github.com/zenoss/zenkit/auth"
 )
 
 var _ = API("{{camel Name "-" | title}}", func() {
@@ -13,8 +13,8 @@ var _ = API("{{camel Name "-" | title}}", func() {
 	Consumes("application/json")
 	Produces("application/json")
 
-	Security(zenkit.JWT(), func() {
-		Scope(zenkit.ScopeAPIAccess)
+	Security(auth.JWT(), func() {
+		Scope(auth.ScopeAPIAccess)
 	})
 
 })

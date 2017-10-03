@@ -3,3 +3,4 @@ services:
   {{Name}}:
     ports:
       - "{{Port}}:{{Port}}"
+      - "{{AdminPort}}:{{AdminPort}}"

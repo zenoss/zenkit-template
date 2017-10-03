@@ -14,6 +14,8 @@ import (
 	"{{$pkg}}/resources"
 	"{{$pkg}}/resources/app"
 	"github.com/zenoss/zenkit"
+	"github.com/zenoss/zenkit/auth"
+	"github.com/zenoss/zenkit/logging"
 	"github.com/goadesign/goa/middleware/security/jwt"
 )
 
@@ -27,15 +29,15 @@ var serverCmd = &cobra.Command{
 		service := zenkit.NewService("{{Name}}", viper.GetBool(zenkit.AuthDisabledConfig))
 
 		// Set the initial log verbosity
-		zenkit.SetLogLevel(service, viper.GetString(zenkit.LogLevelConfig))
+		logging.SetLogLevel(service, viper.GetString(zenkit.LogLevelConfig))
 
 		// Add security
 		filename := viper.GetString(zenkit.AuthKeyFileConfig)
-		keys, err := zenkit.GetKeysFromFS(service, []string{filename})
+		keys, err := auth.GetKeysFromFS(service, []string{filename})
 		if err != nil {
 			logrus.WithField("authfile", filename).WithError(err).Fatal("Unable to get keys for security middleware")
 		}
-		secMW := jwt.New(jwt.NewSimpleResolver(keys), zenkit.DefaultJWTValidation, app.NewJWTSecurity())
+		secMW := jwt.New(jwt.NewSimpleResolver(keys), auth.DefaultJWTValidation, app.NewJWTSecurity())
 		app.UseJWTMiddleware(service, secMW)
 
 		// Add tracing, if enabled
@@ -49,7 +51,7 @@ var serverCmd = &cobra.Command{
 		go viper.WatchConfig()
 		viper.OnConfigChange(func(in fsnotify.Event) {
 			// Update the log verbosity
-			zenkit.SetLogLevel(service, viper.GetString(zenkit.LogLevelConfig))
+			logging.SetLogLevel(service, viper.GetString(zenkit.LogLevelConfig))
 		})
 
 		resources.MountAllControllers(service)
@@ -69,13 +71,30 @@ var serverCmd = &cobra.Command{
 		}()
 		logrus.WithField("address", server.Addr).Info("Server started")
 
+		// Start the admin service
+		adminService := zenkit.NewAdminService(service)
+		adminServer := &graceful.Server{
+			Timeout: time.Duration(15) * time.Second,
+			Server: &http.Server{
+				Addr: fmt.Sprintf(":%d", viper.GetInt(zenkit.AdminPortConfig)),
+				Handler: adminService.Mux,
+			},
+		}
+
+		go func() {
+			if err := adminServer.ListenAndServe(); err != nil {
+				logrus.WithError(err).Fatal("Admin server shut down")
+			}
+		}()
+
 		// Wait for the server to exit
 		<-server.StopChan()
+		<-adminServer.StopChan()
 		logrus.Info("Goodbye")
 	},
 }
 
 func init() {
 	RootCmd.AddCommand(serverCmd)
-	zenkit.AddStandardServerOptions(serverCmd, {{Port}})
+	zenkit.AddStandardServerOptions(serverCmd, {{Port}}, {{AdminPort}})
 }
