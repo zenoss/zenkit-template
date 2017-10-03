@@ -51,7 +51,13 @@ var serverCmd = &cobra.Command{
 		go viper.WatchConfig()
 		viper.OnConfigChange(func(in fsnotify.Event) {
 			// Update the log verbosity
-			logging.SetLogLevel(service, viper.GetString(zenkit.LogLevelConfig))
+			v := viper.New()
+			v.SetConfigFile(in.Name)
+			if err := v.ReadInConfig(); err != nil {
+				logrus.WithField("configfile", in.Name).WithError(err).Error("Could not read config file, log level not updated")
+				return
+			}
+			logging.SetLogLevel(service, v.GetString(zenkit.LogLevelConfig))
 		})
 
 		resources.MountAllControllers(service)
