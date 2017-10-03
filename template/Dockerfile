@@ -1,5 +1,5 @@
 {{ $pkg := print ((print (env "GOPATH") "/src/") | trimPrefix (env "PWD")) "/" Name -}}
-ARG ZENKIT_BUILD_VERSION=1.6.0
+ARG ZENKIT_BUILD_VERSION=1.6.1
 
 FROM zenoss/zenkit-build:${ZENKIT_BUILD_VERSION}
 
@@ -13,5 +13,6 @@ COPY --from=0 /bin/{{Name}} /bin/{{Name}}
 COPY ./{{Name}}.yml /etc/{{Name}}.yml
 
 EXPOSE {{Port}}
+EXPOSE {{AdminPort}}
 
 CMD ["/bin/{{Name}}", "server"]

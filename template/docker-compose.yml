@@ -3,7 +3,7 @@ services:
   {{Name}}:
     image: ${SERVICE_IMAGE}:${IMAGE_TAG:-dev}
     healthcheck:
-      test: test "$$(curl localhost:{{Port}}/_admin/ping)" = "PONG"
+      test: test "$$(curl localhost:{{AdminPort}}/ping)" = "PONG"
     build: 
         context: .
         labels:
@@ -17,6 +17,7 @@ services:
     environment:
       {{replace Name "-" "_" -1 | toUpper}}_LOG_LEVEL: info
       {{replace Name "-" "_" -1 | toUpper}}_HTTP_PORT: {{Port}}
+      {{replace Name "-" "_" -1 | toUpper}}_ADMIN_PORT: {{AdminPort}}
       {{replace Name "-" "_" -1 | toUpper}}_AUTH_DISABLED: 1
       {{replace Name "-" "_" -1 | toUpper}}_AUTH_KEY_FILE: /run/secrets/auth_key
       {{replace Name "-" "_" -1 | toUpper}}_TRACING_ENABLED: 0

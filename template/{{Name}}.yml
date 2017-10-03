@@ -6,5 +6,7 @@ auth:
   key_file: ""
 http:
   port: {{Port}}
+admin:
+  port: {{AdminPort}}
 tracing:
   enabled: false

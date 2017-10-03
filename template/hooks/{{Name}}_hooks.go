@@ -16,11 +16,6 @@ func main() {
 	h := hooks.NewHooks()
 	server := hooks.NewServer(hooks.NewHooksRunner(h))
 
-	// skip admin calls
-	h.BeforeEach(func(t *trans.Transaction) {
-		t.Skip = strings.HasPrefix(t.Name, "admin >")
-	})
-
 	// skip the 400 result from the example
 	h.Before("example > /hello/{name} > greet example > 400 > application/x.{{Name}}.greeting+json", func(t *trans.Transaction) {
 		t.Skip = true
