@@ -77,6 +77,9 @@ var serverCmd = &cobra.Command{
 		}()
 		logrus.WithField("address", server.Addr).Info("Server started")
 
+		// Register health checks
+		registerPing(viper.GetInt(zenkit.AdminPortConfig), time.Second, 15 * time.Second)
+
 		// Start the admin service
 		adminService := zenkit.NewAdminService(service)
 		adminServer := &graceful.Server{
