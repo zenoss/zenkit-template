@@ -4,6 +4,10 @@
 ## Purpose
 TODO: Describe what this service does in general terms.
 
+## Healthchecks
+TODO: Describe the healthchecks emitted by this service and what they indicate.
+* `ping`: Pings the local admin port.
+
 ## Metrics
 TODO: Describe the metrics exposed by this service, and what they indicate.
 
