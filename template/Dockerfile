@@ -4,6 +4,8 @@ ARG ZENKIT_BUILD_VERSION=1.6.2
 FROM zenoss/zenkit-build:${ZENKIT_BUILD_VERSION}
 
 COPY . /go/src/{{$pkg}}
+WORKDIR /go/src/{{$pkg}}
+RUN go-bindata -pkg swagger -o vendor/github.com/zenoss/zenkit/admin/swagger/swagger.go swagger/
 WORKDIR /go/src/{{$pkg}}/{{Name}}
 RUN go build -o /bin/{{Name}}
 
