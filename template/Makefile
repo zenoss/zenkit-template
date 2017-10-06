@@ -30,10 +30,6 @@ GLIDE                := $(shell command -v glide 2> /dev/null)
 ifndef GLIDE
 GLIDE                := $(DOCKER_CMD) glide
 endif
-GOBINDATA            := $(shell command -v go-bindata 2> /dev/null)
-ifndef GOBINDATA
-GOBINDATA            := $(DOCKER_CMD) go-bindata
-endif
 
 .PHONY: default
 default: app init
@@ -44,7 +40,7 @@ all: default clean unit-test build api-test
 .PHONY: docker-compose
 docker-compose: $(DOCKER_COMPOSE)
 
-$(DOCKER_COMPOSE): DOCKER_COMPOSE_VERSION := 1.15.0
+$(DOCKER_COMPOSE): DOCKER_COMPOSE_VERSION := 1.16.1
 $(DOCKER_COMPOSE):
 	@if [ ! -w $(@D) ]; then echo 'No docker-compose found. Please run "sudo make docker-compose" to install it.'; exit 2; else true; fi
 	@curl -L https://github.com/docker/compose/releases/download/$(DOCKER_COMPOSE_VERSION)/docker-compose-`uname -s`-`uname -m` > $@
@@ -72,7 +68,6 @@ $(GOAGEN): vendor
 
 swagger/swagger.go: $(DESIGN) | $(GOAGEN)
 	@$(GOAGEN_CMD) swagger -d $(DESIGNPKG)
-	@$(GOBINDATA) -ignore='swagger\.go' -pkg swagger -o $@ swagger/
 
 resources/controller_reg.go: $(DESIGN) | $(GOAGEN)
 	@$(GOAGEN_CMD) gen -o resources --pkg-path=github.com/zenoss/zenkit/generator/controllerreg -d $(DESIGNPKG)
