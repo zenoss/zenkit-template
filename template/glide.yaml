@@ -20,7 +20,7 @@ import:
   subpackages:
   - websocket
 - package: github.com/zenoss/zenkit
-  ref: master
+  version: 2.1.0
 - package: gopkg.in/yaml.v2
   version: eb3733d160e74a9c7e442f435eb3bea458e1d19f
 - package: github.com/spf13/cobra
