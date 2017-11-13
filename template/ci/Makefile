@@ -3,7 +3,15 @@ DOCKER_COMPOSE_FILES ?= docker-compose.yml hooks/docker-compose.yml ci/docker-co
 include Makefile
 
 IMAGE_NAME   := ${SERVICE_IMAGE}:${IMAGE_TAG}
+
+# This is only used for publishing to GCR from jenkins
+SERVICE_NAME := $(subst zenosszing/,,${SERVICE_IMAGE})
+ifdef ZING_REPOSITORY
+ALT_SERVICE_IMAGE := $(subst zenosszing,${ZING_REPOSITORY},${SERVICE_IMAGE})
+REMOTE_IMAGE := ${REGISTRY}/${ALT_SERVICE_IMAGE}:$(if ${REMOTE_TAG},${REMOTE_TAG},${IMAGE_TAG})
+else
 REMOTE_IMAGE := ${REGISTRY}/${SERVICE_IMAGE}:$(if ${REMOTE_TAG},${REMOTE_TAG},${IMAGE_TAG})
+endif
 
 define CI_DOCKER_COMPOSE_YAML
 version: "3.3"
@@ -32,11 +40,23 @@ push: REMOTE_IMAGE_VALID IMAGE_NAME_VALID
 	@docker tag $(IMAGE_NAME) $(REMOTE_IMAGE)
 	@docker push $(REMOTE_IMAGE)
 
+.PHONY: gpush
+gpush: REMOTE_IMAGE_VALID IMAGE_NAME_VALID GCR_CREDS_VALID
+	gcloud auth activate-service-account ${GCR_ACCOUNT} --key-file ${GCR_KEY_FILE}
+	docker tag $(IMAGE_NAME) $(REMOTE_IMAGE)
+	gcloud docker -- push $(REMOTE_IMAGE)
+
+.PHONY: GCR_CREDS_VALID
+GCR_CREDS_VALID:
+	@test ${GCR_ACCOUNT} || (echo "GCR_ACCOUNT must be defined"; false)
+	@test ${GCR_KEY_FILE} || (echo "GCR_KEY_FILE must be defined"; false)
+	@test ${ZING_REPOSITORY} || (echo "ZING_REPOSITORY must be defined"; false)
+
 define VERSION_YAML
 version: "3.2"
 services:
     $${SERVICE_NAME}:
-        image: $${ZING_REGISTRY}/$(IMAGE_NAME)
+        image: $${ZING_REGISTRY}/$${ZING_REPOSITORY}/$(SERVICE_NAME):${IMAGE_TAG}
 endef
 
 ci/version.yml: export VERSION_YAML:=$(VERSION_YAML)
