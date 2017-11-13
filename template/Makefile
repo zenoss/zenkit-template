@@ -35,7 +35,7 @@ endif
 default: app init
 
 .PHONY: all
-all: default clean unit-test build api-test
+all: default clean unit-test build api-test swagger-test
 
 .PHONY: docker-compose
 docker-compose: $(DOCKER_COMPOSE)
@@ -156,6 +156,14 @@ api-test-containerized: $(DOCKER_COMPOSE_FILES) $(HOOK_FILES)
 
 .PHONY: api-test
 api-test: api-test-containerized
+
+.PHONY: swagger-test-containerized
+swagger-test-containerized: DOCKER_CMD := $(DOCKER_COMPOSE_BASE) $(addprefix -f , $(DOCKER_COMPOSE_FILES)) run $(DOCKER_PARAMS) api-test
+swagger-test-containerized: $(DOCKER_COMPOSE_FILES)
+	@$(DOCKER_CMD) bash -c "diff <(curl {{Name}}:{{AdminPort}}/swagger.json) ./swagger/swagger.json"
+
+.PHONY: swagger-test
+swagger-test: swagger-test-containerized
 
 .PHONY: test
 test: unit-test
