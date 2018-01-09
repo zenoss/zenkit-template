@@ -55,7 +55,7 @@ GCR_CREDS_VALID:
 	@test ${ZING_REPOSITORY} || (echo "ZING_REPOSITORY must be defined"; false)
 
 define VERSION_ENV
-IMAGE_TAG=${IMAGE_TAG}
+IMAGE_NAME=${SERVICE_NAME}:${IMAGE_TAG}
 endef
 
 ci/version.env: export VERSION_ENV:=$(VERSION_ENV)
