@@ -13,6 +13,7 @@ else
 REMOTE_IMAGE := ${REGISTRY}/${SERVICE_IMAGE}:$(if ${REMOTE_TAG},${REMOTE_TAG},${IMAGE_TAG})
 endif
 
+# FIXME: This can be probably be removed once zenkit no longer uses the auth_key.secrets
 define CI_DOCKER_COMPOSE_YAML
 version: "3.3"
 secrets:
@@ -23,6 +24,7 @@ endef
 ci/docker-compose.yml: export CI_DOCKER_COMPOSE_YAML:=$(CI_DOCKER_COMPOSE_YAML)
 ci/docker-compose.yml:
 	@echo "$$CI_DOCKER_COMPOSE_YAML" > $@
+
 
 .PHONY: IMAGE_NAME_VALID
 IMAGE_NAME_VALID:
@@ -52,18 +54,15 @@ GCR_CREDS_VALID:
 	@test ${GCR_KEY_FILE} || (echo "GCR_KEY_FILE must be defined"; false)
 	@test ${ZING_REPOSITORY} || (echo "ZING_REPOSITORY must be defined"; false)
 
-define VERSION_YAML
-version: "3.2"
-services:
-    $${SERVICE_NAME}:
-        image: $${ZING_REGISTRY}/$${ZING_REPOSITORY}/$(SERVICE_NAME):${IMAGE_TAG}
+define VERSION_ENV
+IMAGE_TAG=${IMAGE_TAG}
 endef
 
-ci/version.yml: export VERSION_YAML:=$(VERSION_YAML)
-ci/version.yml: IMAGE_NAME_VALID
-	@echo "$$VERSION_YAML" > $@
+ci/version.env: export VERSION_ENV:=$(VERSION_ENV)
+ci/version.env: IMAGE_NAME_VALID
+	@echo "$$VERSION_ENV" > $@
 
 .PHONY: clean
 clean::
-	rm -f ci/version.yml
+	rm -f ci/version.env
 	rm -f ci/docker-compose.yml
