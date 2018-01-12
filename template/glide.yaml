@@ -4,7 +4,7 @@ ignore:
   - {{$pkg}}
 import:
 - package: github.com/goadesign/goa
-  version: v1.3.1
+  version: dbf7887cb0defd0b80eda334f3bf2ffa05dbdbc3
   subpackages:
   - design
   - design/apidsl
