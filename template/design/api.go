@@ -14,7 +14,7 @@ var _ = API("{{camel Name "-" | title}}", func() {
 	Produces("application/json")
 
 	Security(auth.JWT(), func() {
-		Scope(auth.ScopeAPIAccess)
+		Scope("api:access")
 	})
 
 })
