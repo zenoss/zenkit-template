@@ -4,7 +4,7 @@ ignore:
   - {{$pkg}}
 import:
 - package: github.com/goadesign/goa
-  version: 0ad2e960bfbfb49cf94d3ce689a9426ef006babb
+  version: v1.3.1
   subpackages:
   - design
   - design/apidsl
@@ -20,7 +20,7 @@ import:
   subpackages:
   - websocket
 - package: github.com/zenoss/zenkit
-  version: 2.1.0
+  version: 3.0.0
 - package: gopkg.in/yaml.v2
   version: eb3733d160e74a9c7e442f435eb3bea458e1d19f
 - package: github.com/spf13/cobra
