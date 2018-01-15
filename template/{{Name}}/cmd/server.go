@@ -12,11 +12,8 @@ import (
 	"github.com/spf13/viper"
 	"github.com/tylerb/graceful"
 	"{{$pkg}}/resources"
-	"{{$pkg}}/resources/app"
 	"github.com/zenoss/zenkit"
-	"github.com/zenoss/zenkit/auth"
 	"github.com/zenoss/zenkit/logging"
-	"github.com/goadesign/goa/middleware/security/jwt"
 )
 
 // serverCmd represents the server command
@@ -26,19 +23,17 @@ var serverCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// Create a new service with default middleware
-		service := zenkit.NewService("{{Name}}", viper.GetBool(zenkit.AuthDisabledConfig))
+		service := zenkit.NewService("{{Name}}")
 
 		// Set the initial log verbosity
 		logging.SetLogLevel(service, viper.GetString(zenkit.LogLevelConfig))
 
-		// Add security
-		filename := viper.GetString(zenkit.AuthKeyFileConfig)
-		keys, err := auth.GetKeysFromFS(service, []string{filename})
-		if err != nil {
-			logrus.WithField("authfile", filename).WithError(err).Fatal("Unable to get keys for security middleware")
-		}
-		secMW := jwt.New(jwt.NewSimpleResolver(keys), auth.DefaultJWTValidation, app.NewJWTSecurity())
-		app.UseJWTMiddleware(service, secMW)
+		// Add your security middleware here
+		// if viper.GetBool(zenkit.AuthDisabledConfig) {
+		// 	logrus.Info("Auth Disabled, using MyDevJWTMiddleware")
+		// 	service.Use(MyDevJWTMiddleware)
+		// }
+		// app.UseJWTMiddleware(service, MySecurityMiddleware)
 
 		// Add tracing, if enabled
 		if viper.GetBool(zenkit.TracingEnabledConfig) {
