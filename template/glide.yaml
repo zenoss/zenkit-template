@@ -22,7 +22,7 @@ import:
 - package: github.com/satori/go.uuid
   version: 5bf94b69c6b68ee1b541973bb8e1144db23a194b
 - package: github.com/zenoss/zenkit
-  version: 3.0.1
+  version: 3.0.2
 - package: gopkg.in/yaml.v2
   version: eb3733d160e74a9c7e442f435eb3bea458e1d19f
 - package: github.com/spf13/cobra
