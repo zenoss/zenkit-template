@@ -2,6 +2,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"time"
@@ -13,10 +14,13 @@ import (
 	"github.com/tylerb/graceful"
 	"{{$pkg}}/resources"
 	"{{$pkg}}/resources/app"
+	"github.com/goadesign/goa"
+	"github.com/goadesign/goa/middleware/security/jwt"
 	"github.com/zenoss/zenkit"
 	"github.com/zenoss/zenkit/auth"
 	"github.com/zenoss/zenkit/logging"
-	"github.com/goadesign/goa/middleware/security/jwt"
+
+	jwtgo "github.com/dgrijalva/jwt-go"
 )
 
 // serverCmd represents the server command
@@ -26,19 +30,38 @@ var serverCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// Create a new service with default middleware
-		service := zenkit.NewService("{{Name}}", viper.GetBool(zenkit.AuthDisabledConfig))
+		service := zenkit.NewService("{{Name}}")
 
 		// Set the initial log verbosity
 		logging.SetLogLevel(service, viper.GetString(zenkit.LogLevelConfig))
 
-		// Add security
+		// Read keys for verifying JWT signature
 		filename := viper.GetString(zenkit.AuthKeyFileConfig)
 		keys, err := auth.GetKeysFromFS(service, []string{filename})
 		if err != nil {
 			logrus.WithField("authfile", filename).WithError(err).Fatal("Unable to get keys for security middleware")
 		}
-		secMW := jwt.New(jwt.NewSimpleResolver(keys), auth.DefaultJWTValidation, app.NewJWTSecurity())
-		app.UseJWTMiddleware(service, secMW)
+
+		// Create and use dev jwt middleware
+		if viper.GetBool(zenkit.AuthDisabledConfig) {
+			logrus.Info("Auth Disabled, using dev jwt middleware")
+			// developer claims for this app
+			service.Use(auth.NewDevJWTMiddleware(jwtgo.MapClaims{
+				"scopes": "api:access",
+				}, jwtgo.SigningMethodHS256, keys[0]))
+		}
+
+		// create and use jwt security middleware for this app
+		securityMiddleware := jwt.New(jwt.NewSimpleResolver(keys), func(h goa.Handler) goa.Handler {
+			return func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+				token := jwt.ContextJWT(ctx)
+				if err := token.Claims.Valid(); err != nil {
+					return err
+				}
+				return h(ctx, rw, req)
+			}
+		}, app.NewJWTSecurity())
+		app.UseJWTMiddleware(service, securityMiddleware)
 
 		// Add tracing, if enabled
 		if viper.GetBool(zenkit.TracingEnabledConfig) {
