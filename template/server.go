@@ -10,7 +10,7 @@ import (
 
 // New{{Name | title}}Service creates a new impl of the shortlink service protobuf
 func New{{Name | title}}Service() proto.{{Name | title}}ServiceServer {
-	return &{{Name | title}}Service{NewConcurrentMap()}
+	return &{{Name | title}}Service{}
 }
 
 // {{Name}}Service is a shortlink service impl
