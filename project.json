@@ -2,6 +2,5 @@
   "Name": "helloworld",
   "Title": "Hello World Service",
   "Description": "A sample service to show how the microservice stack works",
-  "Port": "8080",
-  "AdminPort": "9000"
+  "Port": "8080"
 }
