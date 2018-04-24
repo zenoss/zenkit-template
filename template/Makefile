@@ -3,21 +3,20 @@ include .env
 
 SHELL                := /bin/bash
 ROOTDIR              ?= $(CURDIR)
-GOLANG               := $(shell command -v go 2> /dev/null)
-GINKGO               := $(shell command -v ginkgo 2> /dev/null)
-GOAGEN               := vendor/github.com/goadesign/goa/goagen/goagen
+GO                   := $(shell command -v go 2> /dev/null)
+GOFMT 				 := $(shell command -v gofmt 2> /dev/null)
 PACKAGE              := {{$pkg}}
-DESIGNPKG            := $(PACKAGE)/design
-DESIGN 	             := $(shell find design -name \*.go)
+BIN                  := $(GOPATH)/bin
+BASE                 := $(GOPATH)/src/$(PACKAGE)
 DOCKER_COMPOSE       := /usr/local/bin/docker-compose
 LOCAL_USER_ID        := $(shell id -u)
-ZENKIT_BUILD_VERSION := 1.6.2
+ZENKIT_BUILD_VERSION := 1.6.4
 BUILD_IMG            := zenoss/zenkit-build:$(ZENKIT_BUILD_VERSION)
 COVERAGE_DIR         := coverage
-
 DOCKER_PARAMS        := --rm -v $(ROOTDIR):/go/src/$(PACKAGE):rw \
+							-v /var/run/docker.sock:/var/run/docker.sock \
 							-e LOCAL_USER_ID=$(LOCAL_USER_ID) \
-							-w /go/src/$(PACKAGE) 
+							-w /go/src/$(PACKAGE)
 DOCKER_CMD           := docker run -t $(DOCKER_PARAMS) $(BUILD_IMG)
 
 DOCKER_COMPOSE_BASE  := $(DOCKER_COMPOSE)
@@ -25,152 +24,105 @@ ifdef PROJECT_NAME
 DOCKER_COMPOSE_BASE  += -p $(PROJECT_NAME)
 endif
 
-GOAGEN_CMD           := $(DOCKER_CMD) $(GOAGEN)
-GLIDE                := $(shell command -v glide 2> /dev/null)
-ifndef GLIDE
-GLIDE                := $(DOCKER_CMD) glide
-endif
+V = 0
+Q = $(if $(filter 1,$V),,@)
+M = $(shell printf "\033[34;1m▶\033[0m")
 
 .PHONY: default
-default: app init
-
-.PHONY: all
-all: default clean unit-test build api-test swagger-test
+default: unit-test
 
 .PHONY: docker-compose
 docker-compose: $(DOCKER_COMPOSE)
 
-$(DOCKER_COMPOSE): DOCKER_COMPOSE_VERSION := 1.16.1
+$(DOCKER_COMPOSE): DOCKER_COMPOSE_VERSION := 1.14.0
 $(DOCKER_COMPOSE):
 	@if [ ! -w $(@D) ]; then echo 'No docker-compose found. Please run "sudo make docker-compose" to install it.'; exit 2; else true; fi
 	@curl -L https://github.com/docker/compose/releases/download/$(DOCKER_COMPOSE_VERSION)/docker-compose-`uname -s`-`uname -m` > $@
 	@chmod +x $@
 
-glide.lock: glide.yaml
-	@mkdir -p .glide
-	@$(GLIDE) update --force --strip-vendor
+$(BIN):
+	@mkdir -p $@
+$(BIN)/%: $(BIN) | $(BASE) ; $(info $(M) installing $(REPOSITORY)…)
+	@go get $(REPOSITORY)
 
-ifeq "$(FORCE)" "1"
-vendor: clean-glide-cache
-endif
-vendor: glide.lock
-	@mkdir -p .glide
-	@$(GLIDE) install --force --strip-vendor
+GODEP = $(BIN)/dep
+$(BIN)/dep: REPOSITORY=github.com/golang/dep/cmd/dep
 
-.PHONY: clean-glide-cache
-clean-glide-cache:
-	rm -f glide.lock
-	rm -rf .glide
-	rm -rf ${HOME}/.glide
+GINKGO = $(BIN)/ginkgo
+$(BIN)/dep: REPOSITORY=github.com/onsi/ginkgo/ginkgo
 
-$(GOAGEN): vendor
-	@$(DOCKER_CMD) /bin/bash -c 'cd $(@D) && go build'
+GOLINT = $(BIN)/golint
+$(BIN)/golint: REPOSITORY=github.com/golang/lint/golint
 
-swagger/swagger.go: $(DESIGN) | $(GOAGEN)
-	@$(GOAGEN_CMD) swagger -d $(DESIGNPKG)
+GOCOVMERGE = $(BIN)/gocovmerge
+$(BIN)/gocovmerge: REPOSITORY=github.com/wadey/gocovmerge
 
-resources/controller_reg.go: $(DESIGN) | $(GOAGEN)
-	@$(GOAGEN_CMD) gen -o resources --pkg-path=github.com/zenoss/zenkit/generator/controllerreg -d $(DESIGNPKG)
+GOCOV = $(BIN)/gocov
+$(BIN)/gocov: REPOSITORY=github.com/axw/gocov/...
 
-resources/app/%.go: $(DESIGN) | $(GOAGEN)
-	@$(GOAGEN_CMD) app -o resources -d $(DESIGNPKG)
+GOCOVXML = $(BIN)/gocov-xml
+$(BIN)/gocov-xml: REPOSITORY=github.com/AlekSi/gocov-xml
 
-resources/app/test/websocket_helpers.go: $(DESIGN) | $(GOAGEN)
-	@$(GOAGEN_CMD) gen -o resources --pkg-path=github.com/zenoss/zenkit/generator/wstesthelper -d $(DESIGNPKG)
+vendor: Gopkg.toml Gopkg.lock | $(BASE) $(GODEP) ; $(info $(M) retrieving dependencies…)
+	$Q cd $(BASE) && $(GODEP) ensure
+	@touch $@
 
-resources/%.go: $(DESIGN) | $(GOAGEN)
-	@$(GOAGEN_CMD) controller --regen --pkg resources -o resources -d $(DESIGNPKG)
-
-client/%.go: $(DESIGN) | $(GOAGEN)
-	@$(GOAGEN_CMD) client --notool -d $(DESIGNPKG)
-
-define HOOKS_DOCKER_COMPOSE_YAML
-version: "3.3"
-services:
-    api-test:
-        image: $(BUILD_IMG)
-        depends_on:
-            - {{Name}}
-endef
-
-hooks/docker-compose.yml: export HOOKS_DOCKER_COMPOSE_YAML:=$(HOOKS_DOCKER_COMPOSE_YAML)
-hooks/docker-compose.yml:
-	@echo "$$HOOKS_DOCKER_COMPOSE_YAML" > hooks/docker-compose.yml
-
-ifndef GOLANG
-hooks/%_hooks: hooks/%_hooks.go
-	@$(DOCKER_CMD) go build -o $@ $<
+.PHONY: vendor-update
+vendor-update: vendor | $(BASE) $(GODEP)
+ifeq "$(origin PKG)" "command line"
+	$(info $(M) updating $(PKG) dependency…)
+	$Q cd $(BASE) && $(GODEP) ensure -update $(PKG)
 else
-hooks/%_hooks: hooks/%_hooks.go
-	@go build -o $@ $<
+	$(info $(M) updating all dependencies…)
+	$Q cd $(BASE) && $(GODEP) ensure -update
 endif
+	@touch vendor
 
-.PHONY: app
-app: swagger/swagger.go resources/admin.go resources/app/controllers.go resources/controller_reg.go  resources/app/test/websocket_helpers.go client/client.go
+.PHONY: fmt
+fmt: ; $(info $(M) running gofmt…) @ ## Run gofmt on all source files
+	@ret=0 && for d in $$($(GO) list -f '{{.Dir}}' ./... | grep -v /vendor/); do \
+		$(GOFMT) -l -w $$d/*.go || ret=$$? ; \
+	 done ; exit $$ret
+
+.PHONY: lint
+lint: vendor | $(BASE) $(GOLINT) ; $(info $(M) running golint…) @ ## Run golint
+	$Q $(GOLINT) -set_exit_status $(PKGS)
 
 .PHONY: build
 build: export COMMIT_SHA ?= $(shell git rev-parse HEAD)
 build: export GIT_BRANCH ?= $(shell git symbolic-ref HEAD | sed -e "s/^refs\/heads\///")
 build: export PULL_REQUEST = ${ghprbPullLink}
-build: $(DOCKER_COMPOSE)
+build: | $(DOCKER_COMPOSE)
 	@$(DOCKER_COMPOSE_BASE) build {{Name}}
 
 .PHONY: run
-run: vendor $(DOCKER_COMPOSE)
+run: $(DOCKER_COMPOSE)
 	@$(DOCKER_COMPOSE_BASE) up --build
+
+.PHONY: down
+down: $(DOCKER_COMPOSE)
+	$(DOCKER_COMPOSE_BASE) down
+
+.PHONY: check test tests
+check test tests: unit-test
+
+.PHONY: unit-test
+unit-test: COVERAGE_PROFILE := $(COVERAGE_DIR)/profile.out
+unit-test: COVERAGE_HTML    := $(COVERAGE_DIR)/index.html
+unit-test: COVERAGE_XML     := $(COVERAGE_DIR)/coverage.xml
+unit-test: fmt vendor lint | $(GOCOVMERGE) $(GOCOV) $(GOCOVXML) $(GINKGO)
+	@mkdir -p $(COVERAGE_DIR)
+	@$(GINKGO) -r \
+		-cover \
+		-covermode=count \
+		--skipPackage vendor
+	@$(GOCOVMERGE) $$(find . -name \*.coverprofile) > $(COVERAGE_PROFILE)
+	@$(GO) tool cover -html=$(COVERAGE_PROFILE) -o $(COVERAGE_HTML)
+	@$(GOCOV) convert $(COVERAGE_PROFILE) | $(GOCOVXML) > $(COVERAGE_XML)
 
 .PHONY: unit-test-containerized
 unit-test-containerized:
 	@$(DOCKER_CMD) make unit-test
-
-.PHONY: unit-test
-ifndef GINKGO
-unit-test: unit-test-containerized
-else
-unit-test: COVERAGE_PROFILE := $(COVERAGE_DIR)/profile.out
-unit-test: COVERAGE_HTML    := $(COVERAGE_DIR)/index.html
-unit-test: COVERAGE_XML     := $(COVERAGE_DIR)/coverage.xml
-unit-test: 
-	@mkdir -p $(COVERAGE_DIR)
-	@ginkgo -r \
-		-cover \
-		-covermode=count \
-		--skipPackage vendor
-	@gocovmerge $$(find . -name \*.coverprofile) > $(COVERAGE_PROFILE)
-	@go tool cover -html=$(COVERAGE_PROFILE) -o $(COVERAGE_HTML)
-	@gocov convert $(COVERAGE_PROFILE) | gocov-xml > $(COVERAGE_XML)
-endif
-
-DOCKER_COMPOSE_FILES ?= docker-compose.yml hooks/docker-compose.yml
-HOOK_FILES           ?= hooks/{{Name}}_hooks
-
-.PHONY: api-test-containerized
-ifeq "$(SHOW_NAMES)" "1"
-api-test-containerized: NAMES := --names
-endif
-api-test-containerized: DOCKER_CMD := $(DOCKER_COMPOSE_BASE) $(addprefix -f ,$(DOCKER_COMPOSE_FILES)) run $(DOCKER_PARAMS) api-test
-api-test-containerized: $(DOCKER_COMPOSE_FILES) $(HOOK_FILES)
-	@$(DOCKER_CMD) dredd ./swagger/swagger.yaml {{Name}}:{{Port}} \
-		-a go -f hooks/*_hooks \
-		-r junit -o hooks/junit.xml $(NAMES)
-
-.PHONY: api-test
-api-test: api-test-containerized
-
-.PHONY: swagger-test-containerized
-swagger-test-containerized: DOCKER_CMD := $(DOCKER_COMPOSE_BASE) $(addprefix -f , $(DOCKER_COMPOSE_FILES)) run $(DOCKER_PARAMS) api-test
-swagger-test-containerized: $(DOCKER_COMPOSE_FILES)
-	@$(DOCKER_CMD) bash -c "diff <(curl {{Name}}:{{AdminPort}}/swagger.json) ./swagger/swagger.json"
-
-.PHONY: swagger-test
-swagger-test: swagger-test-containerized
-
-.PHONY: test
-test: unit-test
-
-.PHONY: down
-down: $(DOCKER_COMPOSE)
-	$(DOCKER_COMPOSE_BASE) down -v
 
 .PHONY: clean
 clean:: down
@@ -195,10 +147,3 @@ mrclean: clean
 .PHONY: init
 init: .git
 
-local-dev:
-	go get github.com/onsi/ginkgo/ginkgo
-	go get github.com/onsi/gomega
-	go get github.com/wadey/gocovmerge
-	go get github.com/axw/gocov/gocov
-	go get github.com/AlekSi/gocov-xml
-	curl https://glide.sh/get | sh

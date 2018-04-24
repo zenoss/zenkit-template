@@ -1,5 +1,5 @@
 # The binary itself
-{{Name}}/{{Name}}
+shortlink
 
 # Binaries for programs and plugins
 *.exe
@@ -14,13 +14,15 @@
 **/*.coverprofile
 *.out
 
-# Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
-.glide/
 coverage/
+.idea
+*.iml
+.DS_Store
+._.DS_Store
+.vscode/
 
 # JUnit test output
 **/junit.xml
 
-# IntelliJ files
-.idea
-*.iml
+# Swap files
+*.swp

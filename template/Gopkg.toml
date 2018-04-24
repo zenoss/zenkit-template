@@ -1,0 +1,11 @@
+[[constraint]]
+  branch = "4.x"
+  name = "github.com/zenoss/zenkit"
+
+[[constraint]]
+  branch = "zenkit-4.x"
+  name = "github.com/zenoss/zing-proto"
+
+[prune]
+  go-tests = true
+  unused-packages = true

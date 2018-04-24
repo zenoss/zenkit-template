@@ -31,17 +31,6 @@ node('docker') {
                 sh("${MAKE} build")
             }
 
-            stage('API tests') {
-                try {
-                    ansiColor('xterm') {
-                        sh("${MAKE} api-test")
-                    }
-                } catch (Exception e) {
-                    sh("docker-compose logs {{Name}}")
-                    throw e
-                }
-            }
-
             stage('Validate test results') {
                 junit "**/junit.xml"
                 step([

@@ -1,4 +1,4 @@
-package resources_test
+package main_test
 
 import (
 	"math/rand"
@@ -10,9 +10,9 @@ import (
 	"testing"
 )
 
-func TestResources(t *testing.T) {
+func Test{{Name | title}}(t *testing.T) {
 	RegisterFailHandler(Fail)
 	junitReporter := reporters.NewJUnitReporter("junit.xml")
 	rand.Seed(GinkgoRandomSeed())
-	RunSpecsWithDefaultAndCustomReporters(t, "{{camel Name "-" | title}} Resources Suite", []Reporter{junitReporter})
+	RunSpecsWithDefaultAndCustomReporters(t, "{{Name | title}} Test Suite", []Reporter{junitReporter})
 }
