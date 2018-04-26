@@ -1,4 +1,4 @@
-package main
+package service
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	proto "github.com/zenoss/zing-proto/go/{{Name}}"
 )
 
-// New{{Name | title}}Service creates a new impl of the shortlink service protobuf
+// New{{Name | title}}Service creates a new impl of the service protobuf
 func New{{Name | title}}Service() proto.{{Name | title}}ServiceServer {
 	return &{{Name | title}}Service{}
 }
