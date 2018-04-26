@@ -29,7 +29,7 @@ Q = $(if $(filter 1,$V),,@)
 M = $(shell printf "\033[34;1m▶\033[0m")
 
 .PHONY: default
-default: unit-test
+default: init
 
 .PHONY: docker-compose
 docker-compose: $(DOCKER_COMPOSE)
@@ -140,7 +140,7 @@ mrclean: clean
 	rm -rf glide.lock
 	rm -rf vendor
 
-.git:
+.git: vendor
 	@git init
 	@git add .; git commit -m "Initial commit"
 
