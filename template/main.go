@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/zenoss/zenkit"
-	proto "github.com/zenoss/zing-proto/go/{{Name}}"
+	// proto "github.com/zenoss/zing-proto/go/{{Name}}"
 	"google.golang.org/grpc"
 )
 

@@ -49,7 +49,7 @@ GODEP = $(BIN)/dep
 $(BIN)/dep: REPOSITORY=github.com/golang/dep/cmd/dep
 
 GINKGO = $(BIN)/ginkgo
-$(BIN)/dep: REPOSITORY=github.com/onsi/ginkgo/ginkgo
+$(BIN)/ginkgo: REPOSITORY=github.com/onsi/ginkgo/ginkgo
 
 GOLINT = $(BIN)/golint
 $(BIN)/golint: REPOSITORY=github.com/golang/lint/golint
@@ -128,16 +128,10 @@ unit-test-containerized:
 clean:: down
 	rm -f **/junit.xml
 	rm -f **/*.coverprofile
-	rm -f hooks/*_hooks
-	rm -f hooks/docker-compose.yml
 	rm -rf $(COVERAGE_DIR)
 
 .PHONY: mrclean
 mrclean: clean
-	rm -f resources/controller_reg.go
-	rm -rf resources/app
-	rm -rf swagger
-	rm -rf glide.lock
 	rm -rf vendor
 
 .git: vendor

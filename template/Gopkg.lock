@@ -187,12 +187,6 @@
   revision = "16934438408be185be6a435ff4d14a6f09f1c265"
 
 [[projects]]
-  branch = "{{Name}}-test"
-  name = "github.com/zenoss/zing-proto"
-  packages = ["go/{{Name}}"]
-  revision = "b8a0ff95e3ae87b099943149642491a9ab25c442"
-
-[[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
   packages = [
