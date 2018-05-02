@@ -75,6 +75,10 @@ vendor: Gopkg.toml Gopkg.lock | $(BASE) $(GODEP) ; $(info $(M) retrieving depend
 	$Q cd $(BASE) && $(GODEP) ensure
 	@touch $@
 
+.PHONY: vendor-containerized
+vendor-containerized:
+	@$(DOCKER_CMD) make vendor
+
 .PHONY: vendor-update
 vendor-update: vendor | $(BASE) $(GODEP)
 ifeq "$(origin PKG)" "command line"
@@ -143,7 +147,7 @@ clean:: down
 mrclean: clean
 	rm -rf vendor
 
-.git: vendor
+.git: vendor-containerized
 	@git init
 	@git add .; git commit -m "Initial commit"
 
