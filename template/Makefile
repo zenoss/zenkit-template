@@ -33,10 +33,6 @@ M = $(shell printf "\033[34;1m▶\033[0m")
 .PHONY: default
 default: init
 
-.PHONY: verify-template
-verify-template: 
-	$(DOCKER_CMD) make vendor clean test build
-
 .PHONY: docker-compose
 docker-compose: $(DOCKER_COMPOSE)
 
@@ -74,10 +70,6 @@ $(BASE):
 vendor: Gopkg.toml Gopkg.lock | $(BASE) $(GODEP) ; $(info $(M) retrieving dependencies…)
 	$Q cd $(BASE) && $(GODEP) ensure
 	@touch $@
-
-.PHONY: vendor-containerized
-vendor-containerized:
-	@$(DOCKER_CMD) make vendor
 
 .PHONY: vendor-update
 vendor-update: vendor | $(BASE) $(GODEP)
@@ -147,7 +139,7 @@ clean:: down
 mrclean: clean
 	rm -rf vendor
 
-.git: vendor-containerized
+.git: vendor
 	@git init
 	@git add .; git commit -m "Initial commit"
 
