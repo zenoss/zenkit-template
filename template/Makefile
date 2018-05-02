@@ -35,7 +35,7 @@ default: init
 
 .PHONY: verify-template
 verify-template: 
-	$(DOCKER_CMD) make default clean test build
+	$(DOCKER_CMD) make vendor clean test build
 
 .PHONY: docker-compose
 docker-compose: $(DOCKER_COMPOSE)
