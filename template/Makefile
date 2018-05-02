@@ -31,7 +31,7 @@ Q = $(if $(filter 1,$V),,@)
 M = $(shell printf "\033[34;1m▶\033[0m")
 
 .PHONY: default
-default: init
+default: init-containerized
 
 .PHONY: docker-compose
 docker-compose: $(DOCKER_COMPOSE)
@@ -146,3 +146,6 @@ mrclean: clean
 .PHONY: init
 init: .git
 
+.PHONY: init-containerized
+init-containerized:
+	@$(DOCKER_CMD) make init
