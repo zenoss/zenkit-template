@@ -14,12 +14,12 @@ var _ = Describe("Service", func() {
 
 	var (
 		ctx context.Context
-		// svc proto.{{Name | title}}ServiceServer
+		// svc proto.{{Name | title}}Service
 	)
 
 	BeforeEach(func() {
 		ctx = context.Background()
-		// svc = New{{Name | title}}Service()
+		// svc = New{{Name | title}}ServiceServer()
 	})
 
 	It("should do something {{Name}}ish", func() {

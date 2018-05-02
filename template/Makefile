@@ -10,7 +10,7 @@ BIN                  := $(GOPATH)/bin
 BASE                 := $(GOPATH)/src/$(PACKAGE)
 DOCKER_COMPOSE       := /usr/local/bin/docker-compose
 LOCAL_USER_ID        := $(shell id -u)
-ZENKIT_BUILD_VERSION := 1.6.4
+ZENKIT_BUILD_VERSION := 1.7.0
 BUILD_IMG            := zenoss/zenkit-build:$(ZENKIT_BUILD_VERSION)
 COVERAGE_DIR         := coverage
 DOCKER_PARAMS        := --rm -v $(ROOTDIR):/go/src/$(PACKAGE):rw \
@@ -23,6 +23,8 @@ DOCKER_COMPOSE_BASE  := $(DOCKER_COMPOSE)
 ifdef PROJECT_NAME
 DOCKER_COMPOSE_BASE  += -p $(PROJECT_NAME)
 endif
+
+DOCKER_TEST := $(DOCKER_COMPOSE_BASE) -f docker-compose.test.yml run $(DOCKER_PARAMS) test
 
 V = 0
 Q = $(if $(filter 1,$V),,@)
@@ -42,8 +44,8 @@ $(DOCKER_COMPOSE):
 
 $(BIN):
 	@mkdir -p $@
-$(BIN)/%: $(BIN) | $(BASE) ; $(info $(M) installing $(REPOSITORY)…)
-	@go get $(REPOSITORY)
+$(BIN)/%: $(BIN) | $(BASE)
+	@[ -x $@ ] || echo "$(M)" Installing $* && go get $(REPOSITORY)
 
 GODEP = $(BIN)/dep
 $(BIN)/dep: REPOSITORY=github.com/golang/dep/cmd/dep
@@ -80,7 +82,7 @@ endif
 
 .PHONY: fmt
 fmt: ; $(info $(M) running gofmt…) @ ## Run gofmt on all source files
-	@ret=0 && for d in $$($(GO) list -f '{{.Dir}}' ./... | grep -v /vendor/); do \
+	@ret=0 && for d in $$($(GO) list -f '{{`{{.Dir}}`}}' ./... | grep -v /vendor/); do \
 		$(GOFMT) -l -w $$d/*.go || ret=$$? ; \
 	 done ; exit $$ret
 
@@ -104,7 +106,7 @@ down: $(DOCKER_COMPOSE)
 	$(DOCKER_COMPOSE_BASE) down
 
 .PHONY: check test tests
-check test tests: unit-test
+check test tests: unit-test-containerized
 
 .PHONY: unit-test
 unit-test: COVERAGE_PROFILE := $(COVERAGE_DIR)/profile.out
@@ -121,8 +123,9 @@ unit-test: fmt vendor lint | $(GOCOVMERGE) $(GOCOV) $(GOCOVXML) $(GINKGO)
 	@$(GOCOV) convert $(COVERAGE_PROFILE) | $(GOCOVXML) > $(COVERAGE_XML)
 
 .PHONY: unit-test-containerized
-unit-test-containerized:
-	@$(DOCKER_CMD) make unit-test
+unit-test-containerized: export ZENKIT_BUILD_VERSION ?= $(ZENKIT_BUILD_VERSION)
+unit-test-containerized: $(DOCKER_COMPOSE)
+	@$(DOCKER_TEST) make unit-test
 
 .PHONY: clean
 clean:: down
