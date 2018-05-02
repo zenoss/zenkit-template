@@ -33,6 +33,9 @@ M = $(shell printf "\033[34;1m▶\033[0m")
 .PHONY: default
 default: init
 
+.PHONY: verify-template
+verify-template: default clean test build
+
 .PHONY: docker-compose
 docker-compose: $(DOCKER_COMPOSE)
 
