@@ -148,4 +148,4 @@ init: .git
 
 .PHONY: init-containerized
 init-containerized:
-	@$(DOCKER_CMD) make init
+	@$(DOCKER_CMD) make vendor
