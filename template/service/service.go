@@ -15,7 +15,7 @@ func New{{Name | title}}Service() proto.{{Name | title}}ServiceServer {
 	return &{{Name | title}}Service{}
 }
 
-// {{Name}}Service is a shortlink service impl
+// {{Name}}Service {{Description}}
 type {{Name | title}}Service struct {}
 
 // Now implement the interface
