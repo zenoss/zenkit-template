@@ -68,6 +68,8 @@ $(BIN)/gocov: REPOSITORY=github.com/axw/gocov/...
 GOCOVXML = $(BIN)/gocov-xml
 $(BIN)/gocov-xml: REPOSITORY=github.com/AlekSi/gocov-xml
 
+$(BASE):
+	
 vendor: Gopkg.toml Gopkg.lock | $(BASE) $(GODEP) ; $(info $(M) retrieving dependencies…)
 	$Q cd $(BASE) && $(GODEP) ensure
 	@touch $@
