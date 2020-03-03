@@ -54,7 +54,7 @@ GINKGO = $(BIN)/ginkgo
 $(BIN)/ginkgo: REPOSITORY=github.com/onsi/ginkgo/ginkgo
 
 GOLINT = $(BIN)/golint
-$(BIN)/golint: REPOSITORY=github.com/golang/lint/golint
+$(BIN)/golint: REPOSITORY=golang.org/x/lint/golint
 
 GOCOVMERGE = $(BIN)/gocovmerge
 $(BIN)/gocovmerge: REPOSITORY=github.com/wadey/gocovmerge
@@ -66,7 +66,7 @@ GOCOVXML = $(BIN)/gocov-xml
 $(BIN)/gocov-xml: REPOSITORY=github.com/AlekSi/gocov-xml
 
 $(BASE):
-	
+
 vendor: Gopkg.toml Gopkg.lock | $(BASE) $(GODEP) ; $(info $(M) retrieving dependencies…)
 	$Q cd $(BASE) && $(GODEP) ensure
 	@touch $@
