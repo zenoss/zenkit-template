@@ -20,7 +20,7 @@ func main() {
 	zenkit.InitConfig(ServiceName)
 
 	log := zenkit.Logger(ServiceName)
-	ctx, cancel := context.WithCancel(ctxlogrus.ToContext(context.Background()), log)
+	ctx, cancel := context.WithCancel(ctxlogrus.ToContext(context.Background(), log))
 	defer cancel()
 
 	err := zenkit.RunGRPCServer(ctx, ServiceName, func(svr *grpc.Server) error {
