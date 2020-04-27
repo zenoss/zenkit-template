@@ -2,19 +2,28 @@ package main
 
 import (
 	"context"
+
+	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus/ctxlogrus"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 
-	"github.com/zenoss/zenkit"
-	// proto "github.com/zenoss/zing-proto/go/{{Name}}"
-	"google.golang.org/grpc"
+	"github.com/zenoss/zenkit/v5"
+	// proto "github.com/zenoss/zing-proto/v11/go/{{Name}}"
+)
+
+const (
+	// ServiceName is the name if this microservice.
+	ServiceName = "{{Name}}"
 )
 
 func main() {
+	zenkit.InitConfig(ServiceName)
 
-	ctx, cancel := context.WithCancel(context.Background())
+	log := zenkit.Logger(ServiceName)
+	ctx, cancel := context.WithCancel(ctxlogrus.ToContext(context.Background()), log)
 	defer cancel()
 
-	err := zenkit.RunGRPCServer(ctx, "{{Name}}", func(svr *grpc.Server) error {
+	err := zenkit.RunGRPCServer(ctx, ServiceName, func(svr *grpc.Server) error {
 
 		// Fill this in with your service details
 
@@ -24,6 +33,6 @@ func main() {
 
 	})
 	if err != nil {
-		grpclog.Errorf("Error running GRPC server: %s", err.Error())
+		log.WithError(err).Fatal("error running gRPC server")
 	}
 }

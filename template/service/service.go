@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/zenoss/zenkit"
-	// proto "github.com/zenoss/zing-proto/go/{{Name}}"
+	"github.com/zenoss/zenkit/v5"
+	// proto "github.com/zenoss/zing-proto/v11/go/{{Name}}"
 )
 
 /* Uncomment this stuff once you have a service protobuf to link to

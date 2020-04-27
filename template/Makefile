@@ -10,7 +10,7 @@ BIN                  := $(GOPATH)/bin
 BASE                 := $(GOPATH)/src/$(PACKAGE)
 DOCKER_COMPOSE       := /usr/local/bin/docker-compose
 LOCAL_USER_ID        := $(shell id -u)
-ZENKIT_BUILD_VERSION := 1.7.3
+ZENKIT_BUILD_VERSION := 1.8.0
 BUILD_IMG            := zenoss/zenkit-build:$(ZENKIT_BUILD_VERSION)
 COVERAGE_DIR         := coverage
 DOCKER_PARAMS        := --rm -v $(ROOTDIR):/go/src/$(PACKAGE):rw \
@@ -23,8 +23,6 @@ DOCKER_COMPOSE_BASE  := $(DOCKER_COMPOSE)
 ifdef PROJECT_NAME
 DOCKER_COMPOSE_BASE  += -p $(PROJECT_NAME)
 endif
-
-DOCKER_TEST := $(DOCKER_COMPOSE_BASE) -f docker-compose.test.yml run $(DOCKER_PARAMS) test
 
 V = 0
 Q = $(if $(filter 1,$V),,@)
@@ -47,9 +45,6 @@ $(BIN):
 $(BIN)/%: $(BIN) | $(BASE)
 	@[ -x $@ ] || echo "$(M)" Installing $* && go get $(REPOSITORY)
 
-GODEP = $(BIN)/dep
-$(BIN)/dep: REPOSITORY=github.com/golang/dep/cmd/dep
-
 GINKGO = $(BIN)/ginkgo
 $(BIN)/ginkgo: REPOSITORY=github.com/onsi/ginkgo/ginkgo
 
@@ -67,18 +62,18 @@ $(BIN)/gocov-xml: REPOSITORY=github.com/AlekSi/gocov-xml
 
 $(BASE):
 
-vendor: Gopkg.toml Gopkg.lock | $(BASE) $(GODEP) ; $(info $(M) retrieving dependencies…)
-	$Q cd $(BASE) && $(GODEP) ensure
+vendor: go.mod go.sum | $(BASE) ; $(info $(M) retrieving dependencies…)
+	$Q cd $(BASE) && $(GO) mod vendor
 	@touch $@
 
 .PHONY: vendor-update
-vendor-update: vendor | $(BASE) $(GODEP)
+vendor-update: vendor | $(BASE)
 ifeq "$(origin PKG)" "command line"
 	$(info $(M) updating $(PKG) dependency…)
-	$Q cd $(BASE) && $(GODEP) ensure -update $(PKG)
+	$Q cd $(BASE) && $(GO) get $(PKG) && $(GO) mod vendor
 else
 	$(info $(M) updating all dependencies…)
-	$Q cd $(BASE) && $(GODEP) ensure -update
+	$Q cd $(BASE) && $(GO) get ./... && $(GO) mod vendor
 endif
 	@touch vendor
 
@@ -114,9 +109,11 @@ check test tests: unit-test-containerized
 unit-test: COVERAGE_PROFILE := $(COVERAGE_DIR)/profile.out
 unit-test: COVERAGE_HTML    := $(COVERAGE_DIR)/index.html
 unit-test: COVERAGE_XML     := $(COVERAGE_DIR)/coverage.xml
-unit-test: fmt vendor lint | $(GOCOVMERGE) $(GOCOV) $(GOCOVXML) $(GINKGO)
+unit-test: fmt
 	@mkdir -p $(COVERAGE_DIR)
-	@$(GINKGO) -r \
+	@$(GINKGO) \
+		-r \
+		-mod vendor \
 		-cover \
 		-covermode=count \
 		--skipPackage vendor
@@ -127,7 +124,8 @@ unit-test: fmt vendor lint | $(GOCOVMERGE) $(GOCOV) $(GOCOVXML) $(GINKGO)
 .PHONY: unit-test-containerized
 unit-test-containerized: export ZENKIT_BUILD_VERSION ?= $(ZENKIT_BUILD_VERSION)
 unit-test-containerized: $(DOCKER_COMPOSE)
-	@$(DOCKER_TEST) make unit-test
+	@$(DOCKER_COMPOSE_BASE) -f docker-compose.test.yml run $(DOCKER_PARAMS) test make unit-test; \
+		$(DOCKER_COMPOSE_BASE) -f docker-compose.test.yml down
 
 .PHONY: clean
 clean:: down
