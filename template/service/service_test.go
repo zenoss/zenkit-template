@@ -4,7 +4,7 @@ import (
 	"context"
 
 	. "github.com/zenoss/{{Name}}/service"
-	// proto "github.com/zenoss/zing-proto/go/{{Name}}"
+	// proto "github.com/zenoss/zing-proto/v11/go/{{Name}}"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
