@@ -11,3 +11,4 @@ spec:
   selector:
     app: {{Name}}
   type: ClusterIP
+  

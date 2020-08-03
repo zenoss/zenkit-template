@@ -4,3 +4,4 @@ metadata:
   name: {{Name}}
 spec:
   minReplicas: 3
+  
