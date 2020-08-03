@@ -5,10 +5,9 @@ import (
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus/ctxlogrus"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/grpclog"
 
 	"github.com/zenoss/zenkit/v5"
-	// proto "github.com/zenoss/zing-proto/v11/go/{{Name}}"
+	// proto "github.com/zenoss/zing-proto/v11/go/cloud/{{Name}}"
 )
 
 const (
