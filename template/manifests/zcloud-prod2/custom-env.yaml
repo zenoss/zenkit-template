@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{Name}}
+spec:
+  template:
+    spec:
+      containers:
+      - name: {{Name}}
+        env:
+          - name: {{replace Name "-" "_" -1 | toUpper}}_LOG_LEVEL
+            value: "error"
