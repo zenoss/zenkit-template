@@ -67,11 +67,8 @@ spec:
             value: "/run/credentials/{{Name}}.json"
         resources:
           requests:
-            cpu: 1000m
-            memory: 1000M
-          limits:
-            cpu: 1500m
-            memory: 1000M
+            cpu: 100m
+            memory: 100M
         volumeMounts:
           - name: cred-secrets
             mountPath: /run/credentials
