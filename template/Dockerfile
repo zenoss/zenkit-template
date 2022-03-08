@@ -1,5 +1,5 @@
 {{ $pkg := print ((print (env "GOPATH") "/src/") | trimPrefix (env "PWD")) "/" Name -}}
-ARG ZENKIT_BUILD_VERSION=1.8.0
+ARG ZENKIT_BUILD_VERSION=1.9.1
 
 FROM zenoss/zenkit-build:${ZENKIT_BUILD_VERSION}
 
