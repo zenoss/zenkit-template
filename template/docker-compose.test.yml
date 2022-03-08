@@ -19,3 +19,5 @@ services:
     # environment:
     #   BIGTABLE_EMULATOR_HOST: "bigtable:8086"
     #   PUBSUB_EMULATOR_HOST: "pubsub:8085"
+    security_opt:
+      - "seccomp:unconfined"
