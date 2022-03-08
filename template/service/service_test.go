@@ -6,7 +6,7 @@ import (
 	. "github.com/zenoss/{{Name}}/service"
 	// proto "github.com/zenoss/zing-proto/v11/go/{{Name}}"
 
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
@@ -23,7 +23,7 @@ var _ = Describe("Service", func() {
 	})
 
 	It("should do something {{Name}}ish", func() {
-		Ω(true).Should(BeTrue())
+		Expect(true).Should(BeTrue())
 	})
 
 })
