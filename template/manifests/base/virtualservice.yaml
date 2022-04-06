@@ -1,0 +1,22 @@
+### Uncomment this if you're exposing a public API. 
+
+# apiVersion: networking.istio.io/v1alpha3
+# kind: VirtualService
+# metadata:
+#   name: {{Name}}-vs
+# spec:
+#   gateways:
+#     - zing-gateway
+#   hosts:
+#     - "*"
+#   http:
+#     - match:
+#         - uri:
+#             prefix: /zenoss.cloud.{{replace Name "-" "_" -1}}.{{Name | title}}/
+#         - uri:
+#             prefix: /v1/{{replace Name "-" "_" -1}}/
+#       route:
+#         - destination:
+#             host: {{Name}}-svc-public
+#             port:
+#               number: 80
