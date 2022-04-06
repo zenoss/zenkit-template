@@ -1,4 +1,4 @@
-### Uncomment this if you're exposing a public API. 
+### Uncomment this if you're exposing a public API. Remove this file otherwise.
 
 # apiVersion: networking.istio.io/v1alpha3
 # kind: VirtualService
