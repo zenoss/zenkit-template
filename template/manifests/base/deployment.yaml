@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   labels:
     app: {{Name}}
+    project: {{Name}}
   name: {{Name}}
 spec:
   selector:
