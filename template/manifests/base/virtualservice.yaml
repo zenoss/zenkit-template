@@ -4,6 +4,9 @@
 # kind: VirtualService
 # metadata:
 #   name: {{Name}}-vs
+# labels:
+#   app: {{Name}}
+#   project: {{Name}}
 # spec:
 #   gateways:
 #     - zing-gateway
