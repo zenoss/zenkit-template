@@ -16,6 +16,7 @@ spec:
     metadata:
       labels:
         app: {{Name}}
+        project: {{Name}}
     spec:
       affinity:
         podAntiAffinity:
