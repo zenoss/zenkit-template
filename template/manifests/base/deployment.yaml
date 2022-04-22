@@ -1,8 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    zenoss.spinnaker_deploy: "true"
+    # zenoss.zing.deploy.istio: "true" // Uncomment this if you're exposing a public API.
   labels:
     app: {{Name}}
+    project: {{Name}}
   name: {{Name}}
 spec:
   selector:
@@ -12,6 +16,7 @@ spec:
     metadata:
       labels:
         app: {{Name}}
+        project: {{Name}}
     spec:
       affinity:
         podAntiAffinity:
