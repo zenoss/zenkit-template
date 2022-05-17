@@ -6,17 +6,13 @@ labels:
   app: {{Name}}
   project: {{Name}}
 spec:
-  minReplicas: 1
+  minReplicas: 2
   maxReplicas: 16
   metrics:
   - type: Resource
     resource:
       name: cpu
-      targetAverageUtilization: 80
-  - type: Resource
-    resource:
-      name: memory
-      targetAverageUtilization: 80
+      targetAverageUtilization: 300
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
