@@ -1,3 +1,5 @@
 template/vendor
 
+# IDEs
 .idea
+.vscode
