@@ -109,10 +109,11 @@ unit-test: COVERAGE_XML     := $(COVERAGE_DIR)/coverage.xml
 unit-test: fmt
 	@mkdir -p $(COVERAGE_DIR)
 	@$(GINKGO) \
+		run \
 		-r \
-		-mod vendor \
-		-cover \
-		-covermode=count \
+		--mod vendor \
+		--cover \
+		--covermode=count \
 		--skip-package vendor \
 		--junit-report=junit.xml
 	@$(GO) tool cover -html=$(COVERAGE_PROFILE) -o $(COVERAGE_HTML)
