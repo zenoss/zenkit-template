@@ -49,6 +49,9 @@ $(BIN)/ginkgo: REPOSITORY=github.com/onsi/ginkgo/v2/ginkgo@latest
 GOSTATICCHECK = $(BIN)/staticcheck
 $(BIN)/staticcheck: REPOSITORY=honnef.co/go/tools/cmd/staticcheck@latest
 
+REVIVE = $(BIN)/revive
+$(BIN)/revive: REPOSITORY=github.com/mgechev/revive@latest
+
 GOCOV = $(BIN)/gocov
 $(BIN)/gocov: REPOSITORY=github.com/axw/gocov/gocov@latest
 
@@ -68,8 +71,14 @@ fmt:
 	$(info $(M) formatted with gofumpt) 
 
 .PHONY: lint
-lint: vendor | $(BASE) $(GOLINT) ; $(info $(M) running golint…) @ ## Run golint
-	$Q $(GOLINT) -set_exit_status $(PKGS)
+lint: 
+	$(info $(M) running revive linter…)
+	$(REVIVE) \
+		-config $(ROOTDIR)/.revive.toml \
+		-formatter=friendly \
+		-exclude $(ROOTDIR)/vendor/... \
+		$(ROOTDIR)/...
+	$(info $(M) linted with revive linter)
 
 .PHONY: build
 build: export COMMIT_SHA ?= $(shell git rev-parse HEAD)
