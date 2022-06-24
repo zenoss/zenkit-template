@@ -4,7 +4,7 @@ include .env
 SHELL                := /bin/bash
 ROOTDIR              ?= $(CURDIR)
 GO                   := $(shell command -v go 2> /dev/null)
-GOFMT 				 := $(shell command -v gofmt 2> /dev/null)
+GOFMT 				 := $(shell command -v gofumpt 2> /dev/null)
 PACKAGE              := {{$pkg}}
 BIN                  := $(GOPATH)/bin
 BASE                 := $(GOPATH)/src/$(PACKAGE)
@@ -24,8 +24,6 @@ ifdef PROJECT_NAME
 DOCKER_COMPOSE_BASE  += -p $(PROJECT_NAME)
 endif
 
-V = 0
-Q = $(if $(filter 1,$V),,@)
 M = $(shell printf "\033[34;1m▶\033[0m")
 
 .PHONY: default
@@ -43,42 +41,31 @@ $(DOCKER_COMPOSE):
 $(BIN):
 	@mkdir -p $@
 $(BIN)/%: $(BIN) | $(BASE)
-	@[ -x $@ ] || echo "$(M)" Installing $* && go get $(REPOSITORY)
+	@[ -x $@ ] || echo "$(M)" Installing $* && go install $(REPOSITORY)
 
 GINKGO = $(BIN)/ginkgo
-$(BIN)/ginkgo: REPOSITORY=github.com/onsi/ginkgo/v2/ginkgo
+$(BIN)/ginkgo: REPOSITORY=github.com/onsi/ginkgo/v2/ginkgo@latest
 
-GOLINT = $(BIN)/golint
-$(BIN)/golint: REPOSITORY=golang.org/x/lint/golint
+GOSTATICCHECK = $(BIN)/staticcheck
+$(BIN)/staticcheck: REPOSITORY=honnef.co/go/tools/cmd/staticcheck@latest
 
 GOCOV = $(BIN)/gocov
-$(BIN)/gocov: REPOSITORY=github.com/axw/gocov/...
+$(BIN)/gocov: REPOSITORY=github.com/axw/gocov/gocov@latest
 
 GOCOVXML = $(BIN)/gocov-xml
-$(BIN)/gocov-xml: REPOSITORY=github.com/AlekSi/gocov-xml
+$(BIN)/gocov-xml: REPOSITORY=github.com/AlekSi/gocov-xml@latest
 
-$(BASE):
-
-vendor: go.mod go.sum | $(BASE) ; $(info $(M) retrieving dependencies…)
-	$Q cd $(BASE) && $(GO) mod vendor
-	@touch $@
-
-.PHONY: vendor-update
-vendor-update: vendor | $(BASE)
-ifeq "$(origin PKG)" "command line"
-	$(info $(M) updating $(PKG) dependency…)
-	$Q cd $(BASE) && $(GO) get $(PKG) && $(GO) mod vendor
-else
-	$(info $(M) updating all dependencies…)
-	$Q cd $(BASE) && $(GO) get ./... && $(GO) mod vendor
-endif
-	@touch vendor
+.PHONY: vendor
+vendor:
+	$(info $(M) retrieving dependencies…)
+	cd $(ROOTDIR) && $(GO) mod vendor
+	$(info $(M) dependencies have been vendored)
 
 .PHONY: fmt
-fmt: ; $(info $(M) running gofmt…) @ ## Run gofmt on all source files
-	@ret=0 && for d in $$($(GO) list -f '{{`{{.Dir}}`}}' ./... | grep -v /vendor/); do \
-		$(GOFMT) -l -w $$d/*.go || ret=$$? ; \
-	 done ; exit $$ret
+fmt:
+	$(info $(M) running gofumpt…) 
+	$(GOFMT) -w -l $(ROOTDIR)
+	$(info $(M) formatted with gofumpt) 
 
 .PHONY: lint
 lint: vendor | $(BASE) $(GOLINT) ; $(info $(M) running golint…) @ ## Run golint
@@ -122,8 +109,8 @@ unit-test: fmt
 .PHONY: unit-test-containerized
 unit-test-containerized: export ZENKIT_BUILD_VERSION ?= $(ZENKIT_BUILD_VERSION)
 unit-test-containerized: $(DOCKER_COMPOSE)
-	@$(DOCKER_COMPOSE_BASE) -f docker-compose.test.yml run $(DOCKER_PARAMS) test make unit-test; \
-		$(DOCKER_COMPOSE_BASE) -f docker-compose.test.yml down
+	@$(DOCKER_COMPOSE_BASE) -f docker-compose.test.yml run $(DOCKER_PARAMS) test make unit-test
+	@$(DOCKER_COMPOSE_BASE) -f docker-compose.test.yml down
 
 .PHONY: clean
 clean:: down
