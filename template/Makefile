@@ -3,6 +3,7 @@ include .env
 
 SHELL                := /bin/bash
 ROOTDIR              ?= $(CURDIR)
+GOPATH               := $(shell go env GOPATH)
 GO                   := $(shell command -v go 2> /dev/null)
 GOFMT 				 := $(shell command -v gofumpt 2> /dev/null)
 PACKAGE              := {{$pkg}}
@@ -60,25 +61,26 @@ $(BIN)/gocov-xml: REPOSITORY=github.com/AlekSi/gocov-xml@latest
 
 .PHONY: vendor
 vendor:
-	$(info $(M) retrieving dependencies…)
+	@echo "$(M) retrieving dependencies…"
 	cd $(ROOTDIR) && $(GO) mod vendor
-	$(info $(M) dependencies have been vendored)
+	@echo "$(M) dependencies have been vendored"
 
 .PHONY: fmt
 fmt:
-	$(info $(M) running gofumpt…) 
+	@echo "$(M) running gofumpt…"
 	$(GOFMT) -w -l $(ROOTDIR)
-	$(info $(M) formatted with gofumpt) 
+	@echo "$(M) formatted with gofumpt"
 
 .PHONY: lint
 lint: 
-	$(info $(M) running revive linter…)
+	@echo "$(M) running revive linter…"
 	$(REVIVE) \
+		-set_exit_status \
 		-config $(ROOTDIR)/.revive.toml \
 		-formatter=friendly \
 		-exclude $(ROOTDIR)/vendor/... \
 		$(ROOTDIR)/...
-	$(info $(M) linted with revive linter)
+	@echo "$(M) linted with revive linter"
 
 .PHONY: build
 build: export COMMIT_SHA ?= $(shell git rev-parse HEAD)

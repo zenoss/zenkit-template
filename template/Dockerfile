@@ -5,7 +5,7 @@ FROM zenoss/zenkit-build:${ZENKIT_BUILD_VERSION}
 
 COPY . /go/src/{{$pkg}}
 WORKDIR /go/src/{{$pkg}}
-RUN go build -mod vendor -o /bin/{{Name}}
+RUN go build -v -mod vendor -o /bin/{{Name}}
 
 FROM alpine
 RUN apk add --no-cache curl
