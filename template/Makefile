@@ -5,7 +5,7 @@ SHELL                := /bin/bash
 ROOTDIR              ?= $(CURDIR)
 GOPATH               := $(shell go env GOPATH)
 GO                   := $(shell command -v go 2> /dev/null)
-GOFMT 				 := $(shell command -v gofumpt 2> /dev/null)
+GOFUMPT 			 := $(shell command -v gofumpt 2> /dev/null)
 PACKAGE              := {{$pkg}}
 BIN                  := $(GOPATH)/bin
 BASE                 := $(GOPATH)/src/$(PACKAGE)
@@ -68,8 +68,7 @@ vendor:
 .PHONY: fmt
 fmt:
 	@echo "$(M) running gofumpt…"
-	$(GOFMT) -w -l $(ROOTDIR)
-	@echo "$(M) formatted with gofumpt"
+	exit $(shell $(GOFUMPT) -w -l $(ROOTDIR) | wc -l)
 
 .PHONY: lint
 lint: 
