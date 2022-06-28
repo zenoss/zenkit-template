@@ -1,0 +1,161 @@
+enableAllRules = true
+
+####### CUSTOM #######
+# [rule.last-imports]
+# 	arguments = [
+# 		"github.com/zenoss/"
+# 	]
+
+####### Tweaked #######
+[rule.imports-blacklist]
+arguments = ["github.com/pkg/errors", "github.com/golang/protobuf"]
+[rule.function-result-limit]
+arguments = [3]
+[rule.argument-limit]
+arguments = [4]
+
+[rule.unhandled-error]
+arguments = ["fmt.Printf", "fmt.Print", "fmt.Println"]
+severity = "error"
+[rule.empty-lines]
+severity = "error"
+[rule.defer]
+severity = "error"
+[rule.optimize-operands-order]
+severity = "error"
+[rule.indent-error-flow]
+severity = "error"
+[rule.error-return]
+severity = "error"
+[rule.error-strings]
+severity = "error"
+[rule.error-naming]
+severity = "error"
+[rule.context-as-argument]
+arguments = [{ allowTypesBefore = "*testing.T" }]
+severity = "error"
+[rule.context-keys-type]
+severity = "error"
+[rule.early-return]
+severity = "error"
+[rule.atomic]
+severity = "error"
+[rule.blank-imports]
+severity = "error"
+[rule.bool-literal-in-expr]
+severity = "error"
+[rule.call-to-gc]
+severity = "error"
+[rule.deep-exit]
+severity = "error"
+[rule.confusing-results]
+severity = "error"
+[rule.constant-logical-expr]
+severity = "error"
+[rule.duplicated-imports]
+severity = "error"
+[rule.empty-block]
+severity = "error"
+[rule.errorf]
+severity = "error"
+[rule.get-return]
+severity = "error"
+[rule.identical-branches]
+severity = "error"
+[rule.modifies-parameter]
+severity = "error"
+[rule.modifies-value-receiver]
+severity = "error"
+[rule.range]
+severity = "error"
+[rule.range-val-in-closure]
+severity = "error"
+[rule.range-val-address]
+severity = "error"
+[rule.receiver-naming]
+severity = "error"
+[rule.redefines-builtin-id]
+severity = "error"
+[rule.string-of-int]
+severity = "error"
+[rule.struct-tag]
+severity = "error"
+[rule.superfluous-else]
+severity = "error"
+[rule.time-equal]
+severity = "error"
+[rule.time-naming]
+severity = "error"
+[rule.unconditional-recursion]
+severity = "error"
+[rule.unexported-naming]
+severity = "error"
+[rule.unexported-return]
+severity = "error"
+[rule.unnecessary-stmt]
+severity = "error"
+[rule.unreachable-code]
+severity = "error"
+[rule.unused-parameter]
+severity = "error"
+[rule.useless-break]
+severity = "error"
+[rule.waitgroup-by-value]
+severity = "error"
+
+####### Nice to have but requires to many changes #######
+[rule.line-length-limit]
+arguments = [100]
+disabled = true
+[rule.exported]
+disabled = true
+[rule.package-comments]
+disabled = true
+[rule.confusing-naming]
+disabled = true
+severity = "error"
+[rule.cognitive-complexity]
+disabled = true
+arguments = [15]
+[rule.cyclomatic]
+disabled = true
+arguments = [15]
+
+####### disabled #######
+[rule.add-constant]
+disabled = true
+arguments = [{ maxLitCount = "3" }]
+[rule.file-header]
+disabled = true
+[rule.banned-characters]
+disabled = true
+[rule.max-public-structs]
+disabled = true
+[rule.import-shadowing]
+disabled = true
+[rule.use-any]
+disabled = true
+[rule.function-length]
+disabled = true
+[rule.nested-structs]
+disabled = true
+[rule.if-return]
+disabled = true
+[rule.bare-return]
+disabled = true
+[rule.dot-imports]
+disabled = true
+[rule.increment-decrement]
+disabled = true
+[rule.string-format]
+disabled = true
+[rule.flag-parameter]
+disabled = true
+severity = "error"
+[rule.var-declaration]
+disabled = true
+severity = "error"
+[rule.var-naming]
+disabled = true
+arguments = [["ID"], []]
+severity = "error"

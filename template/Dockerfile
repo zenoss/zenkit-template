@@ -1,11 +1,11 @@
 {{ $pkg := print ((print (env "GOPATH") "/src/") | trimPrefix (env "PWD")) "/" Name -}}
-ARG ZENKIT_BUILD_VERSION=1.10.0
+ARG ZENKIT_BUILD_VERSION=1.13.0
 
 FROM zenoss/zenkit-build:${ZENKIT_BUILD_VERSION}
 
 COPY . /go/src/{{$pkg}}
 WORKDIR /go/src/{{$pkg}}
-RUN go build -mod vendor -o /bin/{{Name}}
+RUN go build -v -mod vendor -o /bin/{{Name}}
 
 FROM alpine
 RUN apk add --no-cache curl
