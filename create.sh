@@ -4,7 +4,7 @@ if docker run --rm -it \
 	-w /go/src/"${PWD#"$GOPATH"/src/}" \
 	-e LOCAL_USER_ID="$(id -u)" \
 	-e IN_DOCKER=1 \
-	zenoss/zenkit-build:1.12.0 \
+	zenoss/zenkit-build:1.13.0 \
 	/usr/local/bin/create-zenkit.sh "$1"
 then
     echo "Complete. You should vendor dependencies with the following commands."
