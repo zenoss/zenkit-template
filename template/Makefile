@@ -11,7 +11,7 @@ BIN                  := $(GOPATH)/bin
 BASE                 := $(GOPATH)/src/$(PACKAGE)
 DOCKER_COMPOSE       := /usr/local/bin/docker-compose
 LOCAL_USER_ID        := $(shell id -u)
-ZENKIT_BUILD_VERSION := 1.13.0
+ZENKIT_BUILD_VERSION := 1.15.0
 BUILD_IMG            := zenoss/zenkit-build:$(ZENKIT_BUILD_VERSION)
 COVERAGE_DIR         := coverage
 DOCKER_PARAMS        := --rm -v $(ROOTDIR):/go/src/$(PACKAGE):rw \
@@ -26,6 +26,7 @@ DOCKER_COMPOSE_BASE  += -p $(PROJECT_NAME)
 endif
 
 M = $(shell printf "\033[34;1m▶\033[0m")
+RED = $(shell printf "\033[31;1m▶\033[0m")
 
 .PHONY: default
 default: init-containerized
@@ -67,14 +68,18 @@ vendor:
 
 .PHONY: fmt
 fmt:
-	@echo "$(M) running gofumpt…"
-	exit $(shell $(GOFUMPT) -w -l $(ROOTDIR) | wc -l)
+	@echo "$(M) gofumpt: running"
+	@if [[ "$(shell $(GOFUMPT) -l -w .)" ]]; then \
+		echo "$(RED) gofumpt: Please commit formatted files and if this runs on Jenkins rerun the job"; \
+	else \
+		echo "$(M) gofumpt: files look good"; \
+	fi
+
 
 .PHONY: lint
 lint: 
 	@echo "$(M) running revive linter…"
 	$(REVIVE) \
-		-set_exit_status \
 		-config $(ROOTDIR)/.revive.toml \
 		-formatter=friendly \
 		-exclude $(ROOTDIR)/vendor/... \
