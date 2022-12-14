@@ -2,10 +2,14 @@
 
 set -uo pipefail
 
-ZENKIT_BUILD_TAG="zenoss/zenkit-build:1.15.0"
+ZENKIT_BUILD_TAG="zenoss/zenkit-build:1.14.4-dev"
 
 execute_template_in_docker() {
-	declare path=$1 script=$2
+	local path="$1"
+	shift
+	local script="$1"
+	shift
+	local additional_docker_args=("$@")
 
 	NEWPROJ_NAME="$(basename "$path")"
 	NEWPROJ_PATH="$(realpath "$(dirname "$path")")"
@@ -14,10 +18,10 @@ execute_template_in_docker() {
 		--rm
 		-it
 		-v "$NEWPROJ_PATH:/workspace/tmp/"
-		-v "$PWD:/workspace/zenkit-template"
 		-w "/workspace/tmp/"
 		-e LOCAL_USER_ID="$(id -u)"
 		-e IN_DOCKER=1
+		"${additional_docker_args[@]}"
 	)
 
 	if
@@ -27,7 +31,7 @@ execute_template_in_docker() {
 	then
 		echo "Complete. You should vendor dependencies with the following commands."
 		echo
-		echo "    cd $1"
+		echo "    cd $NEWPROJ_PATH/$NEWPROJ_NAME"
 		echo "    make vendor"
 		echo
 	fi

@@ -9,4 +9,8 @@ main() {
 	execute_template_in_docker "$@"
 }
 
-main "$1" "create-zenkit-local.sh"
+docker_args=(
+	-v "$PWD:/workspace/zenkit-template"
+)
+
+main "$1" "create-zenkit-local.sh" "${docker_args[@]}"
