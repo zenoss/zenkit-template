@@ -2,7 +2,7 @@
 
 set -uo pipefail
 
-ZENKIT_BUILD_TAG="zenoss/zenkit-build:1.14.4-dev"
+ZENKIT_BUILD_TAG="zenoss/zenkit-build:1.15.0"
 
 execute_template_in_docker() {
 	local path="$1"
