@@ -27,8 +27,9 @@ node('docker') {
         "COMMIT_SHA=${env.ghprbActualCommit}",
         "IMAGE_TAG=${env.ghprbActualCommit.substring(0,8)}",
         "PROJECT_NAME={{Name}}-${env.BUILD_NUMBER}",
-        "ROOTDIR=${global.HOST_WORKSPACE}"]) {
+        "ROOTDIR=${global.HOST_WORKSPACE}",
         "SONAR_SCANNER_OPTS=-Djavax.net.ssl.trustStore=${HOME}/sonarcacert.ks -Djavax.net.ssl.trustStorePassword=changeit",
+        ]) {
         try {
             stage('Unit tests') {
                 ansiColor('xterm') {
