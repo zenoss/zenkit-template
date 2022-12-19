@@ -3,7 +3,7 @@
 set -uo pipefail
 
 # shellcheck source=create.sh
-source create.sh
+source "${BASH_SOURCE%/*}/create.sh"
 
 main() {
 	execute_template_in_docker "$@"
