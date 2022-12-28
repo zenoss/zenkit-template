@@ -1,10 +1,12 @@
 enableAllRules = true
 
+severity = "warning"
+# return status code 1 on errors
+errorCode = 1
+warningCode = 0
+
 ####### CUSTOM #######
-# [rule.last-imports]
-# 	arguments = [
-# 		"github.com/zenoss/"
-# 	]
+
 
 ####### Tweaked #######
 [rule.imports-blacklist]
@@ -13,7 +15,18 @@ arguments = ["github.com/pkg/errors", "github.com/golang/protobuf"]
 arguments = [3]
 [rule.argument-limit]
 arguments = [4]
+[rule.line-length-limit]
+arguments = [120]
+[rule.confusing-naming]
+severity = "error"
+[rule.cognitive-complexity]
+arguments = [25]
+[rule.cyclomatic]
+arguments = [25]
 
+
+[rule.use-any]
+severity = "error"
 [rule.unhandled-error]
 arguments = ["fmt.Printf", "fmt.Print", "fmt.Println"]
 severity = "error"
@@ -103,25 +116,12 @@ severity = "error"
 [rule.waitgroup-by-value]
 severity = "error"
 
-####### Nice to have but requires to many changes #######
-[rule.line-length-limit]
-arguments = [100]
-disabled = true
-[rule.exported]
+
+####### disabled #######
+[rule.exported] # exporeted symbols should have a comment
 disabled = true
 [rule.package-comments]
 disabled = true
-[rule.confusing-naming]
-disabled = true
-severity = "error"
-[rule.cognitive-complexity]
-disabled = true
-arguments = [15]
-[rule.cyclomatic]
-disabled = true
-arguments = [15]
-
-####### disabled #######
 [rule.add-constant]
 disabled = true
 arguments = [{ maxLitCount = "3" }]
@@ -132,8 +132,6 @@ disabled = true
 [rule.max-public-structs]
 disabled = true
 [rule.import-shadowing]
-disabled = true
-[rule.use-any]
 disabled = true
 [rule.function-length]
 disabled = true
