@@ -115,7 +115,7 @@ unit-test: fmt
 		-r \
 		--mod vendor \
 		--cover \
-		--covermode=count \
+		--race \
 		--skip-package vendor \
 		--junit-report=junit.xml
 	@$(GO) tool cover -html=$(COVERAGE_PROFILE) -o $(COVERAGE_HTML)
