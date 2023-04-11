@@ -10,20 +10,24 @@ warningCode = 0
 
 ####### Tweaked #######
 [rule.imports-blacklist]
-arguments = ["github.com/pkg/errors", "github.com/golang/protobuf"]
+arguments = [
+    "github.com/pkg/errors",
+    "github.com/golang/protobuf.+",
+    "io/ioutil",
+]
+severity = "error"
 [rule.function-result-limit]
 arguments = [3]
+severity = "error"
 [rule.argument-limit]
 arguments = [4]
-[rule.line-length-limit]
-arguments = [120]
-[rule.confusing-naming]
 severity = "error"
 [rule.cognitive-complexity]
 arguments = [25]
+severity = "error"
 [rule.cyclomatic]
 arguments = [25]
-
+severity = "error"
 
 [rule.use-any]
 severity = "error"
@@ -115,9 +119,18 @@ severity = "error"
 severity = "error"
 [rule.waitgroup-by-value]
 severity = "error"
+[rule.datarace]
+severity = "error"
+[rule.unused-receiver]
+severity = "error"
 
 
 ####### disabled #######
+[rule.line-length-limit]
+arguments = [120]
+disabled = true
+[rule.confusing-naming]
+disabled = true
 [rule.exported] # exporeted symbols should have a comment
 disabled = true
 [rule.package-comments]
