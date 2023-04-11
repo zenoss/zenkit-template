@@ -21,3 +21,5 @@ services:
     #   PUBSUB_EMULATOR_HOST: "pubsub:8085"
     security_opt:
       - "seccomp:unconfined"
+    environment:
+      CGO_ENABLED: 1

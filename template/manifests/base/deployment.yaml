@@ -68,6 +68,8 @@ spec:
               configMapKeyRef:
                 name: project-common
                 key: PROJECT_ID
+          - name: {{replace Name "-" "_" -1 | toUpper}}_SERVICE_LABEL
+            value: "{{Name}}"
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: "/run/credentials/{{Name}}.json"
         resources:
