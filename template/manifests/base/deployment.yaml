@@ -18,18 +18,6 @@ spec:
         app: {{Name}}
         project: {{Name}}
     spec:
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 50
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                  - key: app
-                    operator: In
-                    values:
-                    - {{Name}}
-              topologyKey: kubernetes.io/hostname
       containers:
       - name: {{Name}}
         image: {{Name}}
@@ -41,35 +29,11 @@ spec:
         ports:
           - containerPort: 8081
         env:
-          - name: ZING_PRODUCT_NAME
-            valueFrom:
-              configMapKeyRef:
-                name: project-common
-                key: PRODUCT_NAME
-          - name: ZING_PRODUCT_VERSION
-            valueFrom:
-              configMapKeyRef:
-                name: project-common
-                key: PRODUCT_VERSION
-          - name: ZING_PRODUCT_COMPANY_NAME
-            valueFrom:
-              configMapKeyRef:
-                name: project-common
-                key: COMPANY_NAME
-          - name: ZING_PRODUCT_OTHER_COMMENTS
-            valueFrom:
-              configMapKeyRef:
-                name: project-common
-                key: PROJECT_ID
-          - name: LISTEN_ADDR
-            value: "0.0.0.0:8080"
           - name: {{replace Name "-" "_" -1 | toUpper}}_GCLOUD_PROJECT_ID
             valueFrom:
               configMapKeyRef:
                 name: project-common
                 key: PROJECT_ID
-          - name: {{replace Name "-" "_" -1 | toUpper}}_SERVICE_LABEL
-            value: "{{Name}}"
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: "/run/credentials/{{Name}}.json"
         resources:
