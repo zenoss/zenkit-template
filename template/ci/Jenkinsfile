@@ -3,7 +3,7 @@
 MAKE='make -f ci/Makefile'
 
 node('docker') {
-    jdk = tool name: 'jdk11'
+    jdk = tool name: 'jdk19'
     env.JAVA_HOME = "${jdk}"
 
     currentBuild.displayName = "PR #${env.ghprbPullId}@${env.NODE_NAME}"
@@ -14,7 +14,7 @@ node('docker') {
         global = load env.GLOBAL
         sh '''
             if [ ! -e ${HOME}/sonarcacert.ks ];then
-                keytool -import -file ${SONARQUBE_CERT} -keystore ${HOME}/sonarcacert.ks -storepass changeit -noprompt
+                keytool -import -file ${SONARQUBE_CERT} -keystore ${HOME}/sonarcacert.ks -storepass changeit -noprompt -storeype JKS
             fi
         '''
     }
