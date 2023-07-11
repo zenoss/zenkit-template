@@ -14,7 +14,7 @@ node('docker') {
         global = load env.GLOBAL
         sh '''
             if [ ! -e ${HOME}/sonarcacert.ks ];then
-                keytool -import -file ${SONARQUBE_CERT} -keystore ${HOME}/sonarcacert.ks -storepass changeit -noprompt
+                keytool -import -file ${SONARQUBE_CERT} -keystore ${HOME}/sonarcacert.ks -storepass changeit -noprompt -storeype JKS
             fi
         '''
     }
