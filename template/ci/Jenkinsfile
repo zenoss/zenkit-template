@@ -3,7 +3,7 @@
 MAKE='make -f ci/Makefile'
 
 node('docker') {
-    jdk = tool name: 'jdk11'
+    jdk = tool name: 'jdk19'
     env.JAVA_HOME = "${jdk}"
 
     currentBuild.displayName = "PR #${env.ghprbPullId}@${env.NODE_NAME}"
