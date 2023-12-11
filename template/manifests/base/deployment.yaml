@@ -36,6 +36,9 @@ spec:
                 key: PROJECT_ID
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: "/run/credentials/{{Name}}.json"
+        envFrom:
+          - configMapRef:
+              name: project-env
         resources:
           requests:
             cpu: 100m
