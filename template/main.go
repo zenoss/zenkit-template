@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 
-	"github.com/grpc-ecosystem/go-grpc-middleware/logging/logrus/ctxlogrus"
 	"google.golang.org/grpc"
 
 	"github.com/zenoss/zenkit/v5"
@@ -17,9 +16,10 @@ const (
 
 func main() {
 	zenkit.InitConfig(ServiceName)
-
 	log := zenkit.Logger(ServiceName)
-	ctx, cancel := context.WithCancel(ctxlogrus.ToContext(context.Background(), log))
+
+	ctx := zenkit.LoggerToContext(context.Background(), log)
+	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
 	if err := zenkit.WaitUntilEnvoyReady(log); err != nil {
