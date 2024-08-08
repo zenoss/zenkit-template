@@ -22,6 +22,12 @@ node('docker') {
             }
         }
 
+        stage('Vulnerabilities') {
+            ansiColor('xterm') {
+                sh("${MAKE} vuln-sarif")
+            }
+        }
+
         stage('Update SonarQube Main Branch') {
             SHA = sh(script: 'git rev-parse HEAD | cut -c 1-8', returnStdout: true).trim()
             branch = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()

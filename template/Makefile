@@ -5,22 +5,26 @@ SHELL                := /bin/bash
 ROOTDIR              ?= $(CURDIR)
 GOPATH               := $(shell go env GOPATH)
 GO                   := $(shell command -v go 2> /dev/null)
-GOFUMPT 			 := $(shell command -v gofumpt 2> /dev/null)
-PACKAGE              := {{$pkg}}
-BIN                  := $(GOPATH)/bin
-BASE                 := $(GOPATH)/src/$(PACKAGE)
-DOCKER_COMPOSE       := /usr/local/bin/docker-compose
+GOFUMPT				 := $(shell command -v gofumpt 2> /dev/null)
+GOLANGCI_LINT 		 := $(shell command -v golangci-lint 2> /dev/null)
+REVIVE				 := $(shell command -v revive 2> /dev/null)
+GINKGO				 := $(shell command -v ginkgo 2> /dev/null)
+GOCOV				 := $(shell command -v gocov 2> /dev/null)
+GOCOVXML			 := $(shell command -v gocov-xml 2> /dev/null)
+DOCKER			     := $(shell command -v docker 2> /dev/null)
 LOCAL_USER_ID        := $(shell id -u)
-ZENKIT_BUILD_VERSION := 1.15.0
+ZENKIT_BUILD_VERSION := 1.18.2
 BUILD_IMG            := zenoss/zenkit-build:$(ZENKIT_BUILD_VERSION)
 COVERAGE_DIR         := coverage
-DOCKER_PARAMS        := --rm -v $(ROOTDIR):/go/src/$(PACKAGE):rw \
-							-v /var/run/docker.sock:/var/run/docker.sock \
-							-e LOCAL_USER_ID=$(LOCAL_USER_ID) \
-							-w /go/src/$(PACKAGE)
+DOCKER_PARAMS        := \
+	--rm \
+	--volume $(ROOTDIR):/workspace:rw \
+	--volume /var/run/docker.sock:/var/run/docker.sock \
+	--env LOCAL_USER_ID=$(LOCAL_USER_ID) \
+	--workdir /workspace
 DOCKER_CMD           := docker run -t $(DOCKER_PARAMS) $(BUILD_IMG)
 
-DOCKER_COMPOSE_BASE  := $(DOCKER_COMPOSE)
+DOCKER_COMPOSE_BASE  := $(DOCKER) compose --progress=quiet
 ifdef PROJECT_NAME
 DOCKER_COMPOSE_BASE  += -p $(PROJECT_NAME)
 endif
@@ -32,39 +36,30 @@ RED = $(shell printf "\033[31;1m▶\033[0m")
 default: init-containerized
 
 .PHONY: docker-compose
-docker-compose: $(DOCKER_COMPOSE)
-
-$(DOCKER_COMPOSE): DOCKER_COMPOSE_VERSION := 1.14.0
-$(DOCKER_COMPOSE):
-	@if [ ! -w $(@D) ]; then echo 'No docker-compose found. Please run "sudo make docker-compose" to install it.'; exit 2; else true; fi
-	@curl -L https://github.com/docker/compose/releases/download/$(DOCKER_COMPOSE_VERSION)/docker-compose-`uname -s`-`uname -m` > $@
-	@chmod +x $@
-
-$(BIN):
-	@mkdir -p $@
-$(BIN)/%: $(BIN) | $(BASE)
-	@[ -x $@ ] || echo "$(M)" Installing $* && go install $(REPOSITORY)
-
-GINKGO = $(BIN)/ginkgo
-$(BIN)/ginkgo: REPOSITORY=github.com/onsi/ginkgo/v2/ginkgo@latest
-
-GOSTATICCHECK = $(BIN)/staticcheck
-$(BIN)/staticcheck: REPOSITORY=honnef.co/go/tools/cmd/staticcheck@latest
-
-REVIVE = $(BIN)/revive
-$(BIN)/revive: REPOSITORY=github.com/mgechev/revive@latest
-
-GOCOV = $(BIN)/gocov
-$(BIN)/gocov: REPOSITORY=github.com/axw/gocov/gocov@latest
-
-GOCOVXML = $(BIN)/gocov-xml
-$(BIN)/gocov-xml: REPOSITORY=github.com/AlekSi/gocov-xml@latest
+docker-compose: $(DOCKER)
 
 .PHONY: vendor
 vendor:
 	@echo "$(M) retrieving dependencies…"
 	cd $(ROOTDIR) && $(GO) mod vendor
 	@echo "$(M) dependencies have been vendored"
+
+.PHONY: go-check
+go-check:
+ifeq ($(strip $(GOLANGCI_LINT)),)
+	@echo "Warning: golangci-lint is not available on this system, please install it"
+else
+	@echo "Running golangci-lint..."
+	-@$(GOLANGCI_LINT) run --presets "unused,performance,bugs" --tests=false -D "protogetter,contextcheck,musttag" ./...
+endif
+
+.PHONY: vuln-sarif
+vuln-sarif:
+	$(DOCKER_COMPOSE_BASE) -f docker-compose.test.yml run $(DOCKER_PARAMS) test make vuln-sarif-host
+
+.PHONY: vuln-sarif-host
+vuln-sarif-host: 
+	$(shell GOMEMLIMIT=512MiB govulncheck -test=true -tags=integration -format=sarif ./... | jq ".runs[].results[].locations[].physicalLocation.region += {\"endLine\": $(shell wc -l < go.mod)}" > vuln.sarif)
 
 .PHONY: fmt
 fmt:
@@ -90,16 +85,16 @@ lint:
 build: export COMMIT_SHA ?= $(shell git rev-parse HEAD)
 build: export GIT_BRANCH ?= $(shell git symbolic-ref HEAD | sed -e "s/^refs\/heads\///")
 build: export PULL_REQUEST = ${ghprbPullLink}
-build: | $(DOCKER_COMPOSE)
+build: | $(DOCKER)
 	@$(DOCKER_COMPOSE_BASE) build {{Name}}
 
 .PHONY: run
-run: $(DOCKER_COMPOSE)
+run: $(DOCKER)
 	@$(DOCKER_COMPOSE_BASE) up --build
 
 .PHONY: down
-down: $(DOCKER_COMPOSE)
-	$(DOCKER_COMPOSE_BASE) down
+down: $(DOCKER)
+	$(DOCKER_COMPOSE_BASE) -f docker-compose.test.yml down
 
 .PHONY: check test tests
 check test tests: unit-test-containerized
@@ -123,7 +118,7 @@ unit-test: fmt
 
 .PHONY: unit-test-containerized
 unit-test-containerized: export ZENKIT_BUILD_VERSION ?= $(ZENKIT_BUILD_VERSION)
-unit-test-containerized: $(DOCKER_COMPOSE)
+unit-test-containerized: $(DOCKER)
 	@$(DOCKER_COMPOSE_BASE) -f docker-compose.test.yml run $(DOCKER_PARAMS) test make unit-test
 	@$(DOCKER_COMPOSE_BASE) -f docker-compose.test.yml down
 
@@ -147,3 +142,7 @@ init: .git
 .PHONY: init-containerized
 init-containerized:
 	@$(DOCKER_CMD) make vendor
+
+.PHONY: mocks
+mocks:
+	mockery

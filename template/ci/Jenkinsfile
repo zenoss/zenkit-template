@@ -3,20 +3,11 @@
 MAKE='make -f ci/Makefile'
 
 node('docker') {
-    jdk = tool name: 'jdk19'
-    env.JAVA_HOME = "${jdk}"
-
     currentBuild.displayName = "PR #${env.ghprbPullId}@${env.NODE_NAME}"
     configFileProvider([
         configFile(fileId: 'global', variable: 'GLOBAL'),
-        configFile(fileId: 'sonarqube-ssl', variable: 'SONARQUBE_CERT'),
     ]) {
         global = load env.GLOBAL
-        sh '''
-            if [ ! -e ${HOME}/sonarcacert.ks ];then
-                keytool -import -file ${SONARQUBE_CERT} -keystore ${HOME}/sonarcacert.ks -storepass changeit -noprompt -storeype JKS
-            fi
-        '''
     }
 
     stage('Checkout') {
@@ -28,12 +19,17 @@ node('docker') {
         "IMAGE_TAG=${env.ghprbActualCommit.substring(0,8)}",
         "PROJECT_NAME={{Name}}-${env.BUILD_NUMBER}",
         "ROOTDIR=${global.HOST_WORKSPACE}",
-        "SONAR_SCANNER_OPTS=-Djavax.net.ssl.trustStore=${HOME}/sonarcacert.ks -Djavax.net.ssl.trustStorePassword=changeit",
         ]) {
         try {
             stage('Unit tests') {
                 ansiColor('xterm') {
                     sh("${MAKE} unit-test-containerized")
+                }
+            }
+
+            stage('Vulnerabilities') {
+                ansiColor('xterm') {
+                    sh("${MAKE} vuln-sarif")
                 }
             }
 
