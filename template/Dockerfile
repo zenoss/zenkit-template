@@ -1,10 +1,9 @@
-{{ $pkg := print ((print (env "GOPATH") "/src/") | trimPrefix (env "PWD")) "/" Name -}}
 ARG ZENKIT_BUILD_VERSION=1.18.2
 
 FROM zenoss/zenkit-build:${ZENKIT_BUILD_VERSION}
 
-COPY . /workspace/{{$pkg}}
-WORKDIR /workspace/{{$pkg}}
+COPY . /workspace/
+WORKDIR /workspace/
 RUN go build -v -mod vendor -o /bin/{{Name}}
 
 FROM alpine
