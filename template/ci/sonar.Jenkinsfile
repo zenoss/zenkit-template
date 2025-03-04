@@ -16,15 +16,15 @@ node('docker') {
     }
 
     try {
-        stage('Tests') {
+        stage('Checks') {
             ansiColor('xterm') {
-                sh("${MAKE} unit-test-containerized")
+                sh("${MAKE} check-containerized")
             }
         }
 
-        stage('Vulnerabilities') {
+        stage('Unit tests') {
             ansiColor('xterm') {
-                sh("${MAKE} vuln-sarif")
+                sh("${MAKE} unit-test-containerized")
             }
         }
 

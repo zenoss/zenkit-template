@@ -19,4 +19,3 @@ descriptive.
 * `{{replace Name "-" "_" -1 | toUpper}}_AUTH_DEV_TENANT`: When auth is disabled, the tenant name to use as the identity. Defaults to "ACME".
 * `{{replace Name "-" "_" -1 | toUpper}}_AUTH_DEV_USER`: When auth is disabled, the user id to use as the identity. Defaults to "zcuser@acme.example.com".
 * `{{replace Name "-" "_" -1 | toUpper}}_TRACING_ENABLED`: Whether request tracing is enabled.
-* `{{replace Name "-" "_" -1 | toUpper}}_GRPC_LISTEN_ADDR`: The address on which the gRPC server should listen. Defaults to ":8080".
