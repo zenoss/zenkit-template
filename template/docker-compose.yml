@@ -1,9 +1,10 @@
-version: "3.3"
 services:
   {{Name}}:
     image: ${SERVICE_IMAGE}:${IMAGE_TAG:-dev}
     build:
         context: .
+        args:
+          GOAMD64: ${GOAMD64:-v3}
         labels:
           zenoss.zing.commit-sha: ${COMMIT_SHA:-none}
           zenoss.zing.pull-request: ${PULL_REQUEST:-none}
@@ -11,10 +12,9 @@ services:
           zenoss.zing.build_number: ${BUILD_ID:-none}
           zenoss.zing.build_url: ${BUILD_URL:-none}
     ports:
-      - "{{Port}}:{{Port}}"
+      - "8080:8080"
     environment:
       {{replace Name "-" "_" -1 | toUpper}}_LOG_STACKDRIVER: 0
       {{replace Name "-" "_" -1 | toUpper}}_LOG_LEVEL: debug
-      {{replace Name "-" "_" -1 | toUpper}}_GRPC_LISTEN_ADDR: ":{{Port}}"
       {{replace Name "-" "_" -1 | toUpper}}_TRACING_ENABLED: 0
       {{replace Name "-" "_" -1 | toUpper}}_AUTH_DISABLED: 1

@@ -1,1 +1,1 @@
--v --junit --junit-directory /output --no-color --tags @{{Name}} -D subscription_types=
+-v --junit --junit-directory /output --no-color --tags @{{Name}}

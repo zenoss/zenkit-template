@@ -1,0 +1,8 @@
+with-expecter: true
+dir: "{{ `{{.InterfaceDir}}/mocks` }}"
+filename: "{{ `{{.InterfaceName}}.go` }}"
+outpkg: "mocks"
+mockname: "{{ `{{.InterfaceName}}` }}"
+replace-type:
+  - cloud.google.com/go/internal/pubsub=cloud.google.com/go/pubsub
+packages: {}

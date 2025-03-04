@@ -21,35 +21,20 @@ node('docker') {
         "ROOTDIR=${global.HOST_WORKSPACE}",
         ]) {
         try {
+            stage('Build image') {
+                sh("${MAKE} build")
+            }
+
+            stage('Checks') {
+                ansiColor('xterm') {
+                    sh("${MAKE} check-containerized")
+                }
+            }
+
             stage('Unit tests') {
                 ansiColor('xterm') {
                     sh("${MAKE} unit-test-containerized")
                 }
-            }
-
-            stage('Vulnerabilities') {
-                ansiColor('xterm') {
-                    sh("${MAKE} vuln-sarif")
-                }
-            }
-
-            stage('SonarQube PR analysis') {
-                def scannerHome = tool 'SonarScanner';
-                def args = [
-                    "${scannerHome}/bin/sonar-scanner",
-                    "-Dproject.settings=./ci/sonar-project.properties",
-                    "-Dsonar.pullrequest.key=${env.ghprbPullId}",
-                    "-Dsonar.pullrequest.branch=${env.ghprbSourceBranch}",
-                    "-Dsonar.pullrequest.base=${env.ghprbTargetBranch}",
-                    "-Dsonar.buildbreaker.skip=true",
-                ]
-                withSonarQubeEnv("sonarqube.zenoss.io") {
-                    sh args.join(" ")
-                }
-            }
-
-            stage('Build image') {
-                sh("${MAKE} build")
             }
 
             stage('Validate test results') {
@@ -69,7 +54,22 @@ node('docker') {
                 ])
             }
 
-            stage("Validate Manifests") {
+            stage('SonarQube PR analysis') {
+                def scannerHome = tool 'SonarScanner';
+                def args = [
+                    "${scannerHome}/bin/sonar-scanner",
+                    "-Dproject.settings=./ci/sonar-project.properties",
+                    "-Dsonar.pullrequest.key=${env.ghprbPullId}",
+                    "-Dsonar.pullrequest.branch=${env.ghprbSourceBranch}",
+                    "-Dsonar.pullrequest.base=${env.ghprbTargetBranch}",
+                    "-Dsonar.buildbreaker.skip=true",
+                ]
+                withSonarQubeEnv("sonarqube.zenoss.io") {
+                    sh args.join(" ")
+                }
+            }
+
+            stage("Validate manifests") {
                 build job: env.GLOBAL_KUSTOMIZE_PROOFING_JOB,
                     wait: true,
                     propagate: true,

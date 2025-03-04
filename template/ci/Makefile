@@ -1,5 +1,3 @@
-DOCKER_COMPOSE_FILES ?= docker-compose.yml hooks/docker-compose.yml ci/docker-compose.yml
-
 include Makefile
 
 IMAGE_NAME   := ${SERVICE_IMAGE}:${IMAGE_TAG}
@@ -12,19 +10,6 @@ REMOTE_IMAGE := ${REGISTRY}/${ALT_SERVICE_IMAGE}:$(if ${REMOTE_TAG},${REMOTE_TAG
 else
 REMOTE_IMAGE := ${REGISTRY}/${SERVICE_IMAGE}:$(if ${REMOTE_TAG},${REMOTE_TAG},${IMAGE_TAG})
 endif
-
-# FIXME: This can be probably be removed once zenkit no longer uses the auth_key.secrets
-define CI_DOCKER_COMPOSE_YAML
-version: "3.3"
-secrets:
-    auth_key:
-        file: $(ROOTDIR)/dev.secret
-endef
-
-ci/docker-compose.yml: export CI_DOCKER_COMPOSE_YAML:=$(CI_DOCKER_COMPOSE_YAML)
-ci/docker-compose.yml:
-	@echo "$$CI_DOCKER_COMPOSE_YAML" > $@
-
 
 .PHONY: IMAGE_NAME_VALID
 IMAGE_NAME_VALID:
@@ -65,4 +50,3 @@ ci/version.env: IMAGE_NAME_VALID
 .PHONY: clean
 clean::
 	rm -f ci/version.env
-	rm -f ci/docker-compose.yml

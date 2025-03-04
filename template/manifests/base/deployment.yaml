@@ -27,7 +27,7 @@ spec:
           readOnlyRootFilesystem: true
           runAsUser: 512
         ports:
-          - containerPort: 8081
+          - containerPort: 8080
         env:
           - name: {{replace Name "-" "_" -1 | toUpper}}_GCLOUD_PROJECT_ID
             valueFrom:
