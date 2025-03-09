@@ -1,25 +1,41 @@
 #
 # This compose file is intended for integration testing
 #
-version: "3.3"
 services:
-  # bigtable:
-  #   image: zenoss/gcloud-emulator:bigtable
-  #   ports:
-  #     - "8086"
-  # pubsub:
-  #   image: zenoss/gcloud-emulator:pubsub
-  #   ports:
-  #     - "8085"
   test:
-    image: zenoss/zenkit-build:${ZENKIT_BUILD_VERSION}
+    image: gcr.io/zing-registry-188222/zenkit-build:${ZENKIT_BUILD_VERSION}
     # depends_on:
     #   - bigtable
+    #   - datastore
+    #   - firestore
     #   - pubsub
-    # environment:
-    #   BIGTABLE_EMULATOR_HOST: "bigtable:8086"
-    #   PUBSUB_EMULATOR_HOST: "pubsub:8085"
-    security_opt:
-      - "seccomp:unconfined"
+    #   - redis
     environment:
       CGO_ENABLED: 1
+    security_opt:
+      - "seccomp:unconfined"
+    # BIGTABLE_EMULATOR_HOST: "bigtable:8086"
+    # DATASTORE_EMULATOR_HOST: "datastore:8081"
+    # FIRESTORE_EMULATOR_HOST: "firestore:8087"
+    # PUBSUB_EMULATOR_HOST: "pubsub:8085"
+    # {{replace Name "-" "_" -1 | toUpper}}_GCLOUD_MEMORYSTORE_ADDRESS: "redis:6379"
+  # bigtable:
+  #   image: gcr.io/zing-registry-188222/gcloud-emulator:bigtable
+  #   ports:
+  #     - "8086"
+  # datastore:
+  #   image: gcr.io/zing-registry-188222/gcloud-emulator:pubsub
+  #   ports:
+  #     - "8081"
+  # firestore:
+  #   image: gcr.io/zing-registry-188222/gcloud-emulator:pubsub
+  #   ports:
+  #     - "8087"
+  # pubsub:
+  #   image: gcr.io/zing-registry-188222/gcloud-emulator:pubsub
+  #   ports:
+  #     - "8085"
+  # redis:
+  #   image: redis
+  #   ports:
+  #     - "6379"

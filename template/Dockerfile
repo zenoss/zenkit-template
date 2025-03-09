@@ -1,18 +1,19 @@
-ARG ZENKIT_BUILD_VERSION=1.18.2
+ARG ZENKIT_BUILD_VERSION=1.24.5
+FROM gcr.io/zing-registry-188222/zenkit-build:${ZENKIT_BUILD_VERSION} AS builder
 
-FROM zenoss/zenkit-build:${ZENKIT_BUILD_VERSION}
-
+ARG GOAMD64=v3
+ENV GOAMD64=$GOAMD64
 COPY . /workspace/
 WORKDIR /workspace/
-RUN go build -v -mod vendor -o /bin/{{Name}}
+RUN go build -mod vendor -o /bin/{{Name}}
 
-FROM alpine
-RUN apk add --no-cache curl
+FROM alpine:3
+COPY --from=builder /bin/{{Name}} /bin/{{Name}}
+RUN apk add --no-cache 'curl>=8' ; \
+    addgroup -S -g 512 zing && adduser -S -G zing -u 512 zing
 
-COPY --from=0 /bin/{{Name}} /bin/{{Name}}
-RUN addgroup -S zing && adduser -S -G zing -u 512 512
-USER 512
+USER 512:512
 
-EXPOSE {{Port}}
+EXPOSE 8080
 
 CMD ["/bin/{{Name}}"]
