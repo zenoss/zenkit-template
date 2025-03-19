@@ -6,8 +6,8 @@ a ready-to-go microservice scaffold using its companion library,
 
 ## Required environment
 
-* You should have Go and Docker set up and usable by your current user.
-* You should be in the directory under `$GOPATH` representing the owner of the
+- You should have Go and Docker set up and usable by your current user.
+- You should be in the directory under `$GOPATH` representing the owner of the
   repository you're creating (e.g., `$GOPATH/src/github.com/zenoss`).
 
 ## Quickstart
@@ -43,13 +43,13 @@ You, too, can contribute to zenkit-template!
 
 It's as easy as 1-2-3!
 
-1. Make a branch with your changes
+1.  Make a branch with your changes
 
-       git checkout -b improvements
+        git checkout -b improvements
 
-2. Run the create-local.sh script to test your changes (from the parent
-   directory)
+2.  Run the create-local.sh script to test your changes (from the parent
+    directory)
 
-       zenkit-template/create-local.sh my-test-service
+        zenkit-template/create-local.sh my-test-service
 
-3. Test your newly deployed microservice, and if it looks good, open a pull request!
+3.  Test your newly deployed microservice, and if it looks good, open a pull request!

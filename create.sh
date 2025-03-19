@@ -41,4 +41,4 @@ main() {
 	execute_template_in_docker "$@"
 }
 
-[[ "$0" == "${BASH_SOURCE[0]}" ]] && main "$1" "create-zenkit.sh"
+[[ $0 == "${BASH_SOURCE[0]}" ]] && main "$1" "create-zenkit.sh"
