@@ -58,31 +58,31 @@ services:
     #   - redis
     environment:
       CGO_ENABLED: 1
-    security_opt:
-      - "seccomp:unconfined"
     # BIGTABLE_EMULATOR_HOST: "bigtable:8086"
     # DATASTORE_EMULATOR_HOST: "datastore:8081"
     # FIRESTORE_EMULATOR_HOST: "firestore:8087"
     # PUBSUB_EMULATOR_HOST: "pubsub:8085"
     # {{replace Name "-" "_" -1 | toUpper}}_GCLOUD_MEMORYSTORE_ADDRESS: "redis:6379"
+    security_opt:
+      - "seccomp:unconfined"
   # bigtable:
   #   profiles: [test, run]
-  #   image: gcr.io/zing-registry-188222/gcloud-emulator:bigtable
+  #   image: gcr.io/zing-registry-188222/gcloud-emulators:bigtable
   #   ports:
   #     - "8086"
   # datastore:
   #   profiles: [test, run]
-  #   image: gcr.io/zing-registry-188222/gcloud-emulator:pubsub
+  #   image: gcr.io/zing-registry-188222/gcloud-emulators:pubsub
   #   ports:
   #     - "8081"
   # firestore:
   #   profiles: [test, run]
-  #   image: gcr.io/zing-registry-188222/gcloud-emulator:pubsub
+  #   image: gcr.io/zing-registry-188222/gcloud-emulators:pubsub
   #   ports:
   #     - "8087"
   # pubsub:
   #   profiles: [test, run]
-  #   image: gcr.io/zing-registry-188222/gcloud-emulator:pubsub
+  #   image: gcr.io/zing-registry-188222/gcloud-emulators:pubsub
   #   ports:
   #     - "8085"
   # redis:
