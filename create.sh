@@ -2,7 +2,7 @@
 
 set -uo pipefail
 
-ZENKIT_BUILD_TAG="zenoss/zenkit-build:1.18.2"
+ZENKIT_BUILD_TAG="gcr.io/zing-registry-188222/zenkit-build:1.24.5"
 
 execute_template_in_docker() {
 	local path="$1"
@@ -32,7 +32,7 @@ execute_template_in_docker() {
 		echo "Complete. You should vendor dependencies with the following commands."
 		echo
 		echo "    cd $NEWPROJ_PATH/$NEWPROJ_NAME"
-		echo "    make vendor"
+		echo "    go mod tidy && go mod vendor"
 		echo
 	fi
 }

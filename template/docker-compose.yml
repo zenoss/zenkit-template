@@ -1,20 +1,92 @@
-version: "3.3"
+#
+# Zenoss CONFIDENTIAL
+# -------------------
+#
+# This software Copyright (c) Zenoss, Inc. 2025
+# All Rights Reserved.
+#
+# NOTICE:  All information contained herein is, and remains the property of
+# Zenoss Incorporated and its suppliers, if any.  The intellectual and
+# technical concepts contained herein are owned and proprietary to Zenoss
+# Incorporated and its suppliers and may be covered by U.S. and Foreign
+# Patents, patents in process, and are protected by U.S. and foreign trade
+# secret or copyright law. Dissemination of this information or reproduction of
+# any this material herein is strictly forbidden unless prior written
+# permission by an authorized officer is obtained from Zenoss Incorporated.
+#
+
+# One of the following profiles must be set when using this file.
+#
+#   build - For building the service image.
+#   check - For running static checks without running other dependencies.
+#   test  - For running tests that require other dependencies.
+#   run   - For running the service with required dependencies.
 services:
   {{Name}}:
+    profiles: [build, run]
     image: ${SERVICE_IMAGE}:${IMAGE_TAG:-dev}
     build:
-        context: .
-        labels:
-          zenoss.zing.commit-sha: ${COMMIT_SHA:-none}
-          zenoss.zing.pull-request: ${PULL_REQUEST:-none}
-          zenoss.zing.branch_name: ${GIT_BRANCH:-none}
-          zenoss.zing.build_number: ${BUILD_ID:-none}
-          zenoss.zing.build_url: ${BUILD_URL:-none}
+      context: .
+      args:
+        GOAMD64: ${GOAMD64:-v3}
+      labels:
+        zenoss.zing.commit-sha: ${COMMIT_SHA:-none}
+        zenoss.zing.pull-request: ${PULL_REQUEST:-none}
+        zenoss.zing.branch_name: ${GIT_BRANCH:-none}
+        zenoss.zing.build_number: ${BUILD_ID:-none}
+        zenoss.zing.build_url: ${BUILD_URL:-none}
     ports:
-      - "{{Port}}:{{Port}}"
+      - "8080:8080"
     environment:
       {{replace Name "-" "_" -1 | toUpper}}_LOG_STACKDRIVER: 0
       {{replace Name "-" "_" -1 | toUpper}}_LOG_LEVEL: debug
-      {{replace Name "-" "_" -1 | toUpper}}_GRPC_LISTEN_ADDR: ":{{Port}}"
       {{replace Name "-" "_" -1 | toUpper}}_TRACING_ENABLED: 0
       {{replace Name "-" "_" -1 | toUpper}}_AUTH_DISABLED: 1
+  check:
+    profiles: [check]
+    image: gcr.io/zing-registry-188222/zenkit-build:${ZENKIT_BUILD_VERSION}
+    environment:
+      CGO_ENABLED: 1
+  test:
+    profiles: [test]
+    image: gcr.io/zing-registry-188222/zenkit-build:${ZENKIT_BUILD_VERSION}
+    # depends_on:
+    #   - bigtable
+    #   - datastore
+    #   - firestore
+    #   - pubsub
+    #   - redis
+    environment:
+      CGO_ENABLED: 1
+    # BIGTABLE_EMULATOR_HOST: "bigtable:8086"
+    # DATASTORE_EMULATOR_HOST: "datastore:8081"
+    # FIRESTORE_EMULATOR_HOST: "firestore:8087"
+    # PUBSUB_EMULATOR_HOST: "pubsub:8085"
+    # {{replace Name "-" "_" -1 | toUpper}}_GCLOUD_MEMORYSTORE_ADDRESS: "redis:6379"
+    security_opt:
+      - "seccomp:unconfined"
+  # bigtable:
+  #   profiles: [test, run]
+  #   image: gcr.io/zing-registry-188222/gcloud-emulators:bigtable
+  #   ports:
+  #     - "8086"
+  # datastore:
+  #   profiles: [test, run]
+  #   image: gcr.io/zing-registry-188222/gcloud-emulators:pubsub
+  #   ports:
+  #     - "8081"
+  # firestore:
+  #   profiles: [test, run]
+  #   image: gcr.io/zing-registry-188222/gcloud-emulators:pubsub
+  #   ports:
+  #     - "8087"
+  # pubsub:
+  #   profiles: [test, run]
+  #   image: gcr.io/zing-registry-188222/gcloud-emulators:pubsub
+  #   ports:
+  #     - "8085"
+  # redis:
+  #   profiles: [test, run]
+  #   image: redis
+  #   ports:
+  #     - "6379"
