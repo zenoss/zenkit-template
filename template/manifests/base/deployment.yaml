@@ -18,6 +18,7 @@ spec:
         app: {{Name}}
         project: {{Name}}
     spec:
+      serviceAccountName: {{Name}}
       containers:
       - name: {{Name}}
         image: {{Name}}
@@ -34,8 +35,6 @@ spec:
               configMapKeyRef:
                 name: project-common
                 key: PROJECT_ID
-          - name: GOOGLE_APPLICATION_CREDENTIALS
-            value: "/run/credentials/{{Name}}.json"
         envFrom:
           - configMapRef:
               name: project-env
@@ -43,11 +42,3 @@ spec:
           requests:
             cpu: 100m
             memory: 100M
-        volumeMounts:
-          - name: cred-secrets
-            mountPath: /run/credentials
-            readOnly: true
-      volumes:
-        - name: cred-secrets
-          secret:
-            secretName: {{Name}}
