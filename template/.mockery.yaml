@@ -1,11 +1,7 @@
-disable-version-string: true
-issue-845-fix: true
-resolve-type-alias: false
-with-expecter: true
-dir: "{{ `{{.InterfaceDir}}/mocks` }}"
-filename: "{{ `{{.InterfaceName}}.go` }}"
-outpkg: "mocks"
-mockname: "{{ `{{.InterfaceName}}` }}"
-replace-type:
-  - cloud.google.com/go/internal/pubsub=cloud.google.com/go/pubsub
-packages: {}
+dir: "{{.InterfaceDir}}/mocks"
+structname: "{{.InterfaceName}}"
+pkgname: "{{.SrcPackageName}}mocks"
+filename: "mocks.go"
+template: testify
+template-data:
+  unroll-variadic: true
