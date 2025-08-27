@@ -19,10 +19,10 @@ func main() {
 	log := zenkit.Logger(ServiceName)
 
 	ctx := zenkit.LoggerToContext(context.Background(), log)
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
+	ctx = zenkit.WithTrapSIGINT(ctx)
 
-	if err := zenkit.WaitUntilEnvoyReady(log); err != nil {
+	err := zenkit.WaitUntilEnvoyReady(log)
+	if err != nil {
 		log.WithError(err).Fatal("waiting for envoy failed")
 	}
 
