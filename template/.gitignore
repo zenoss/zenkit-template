@@ -1,5 +1,5 @@
 # The binary itself
-{{Name}}
+/{{Name}}
 
 # Binaries for programs and plugins
 *.exe

@@ -25,5 +25,4 @@ var _ = Describe("Service", func() {
 	It("should do something {{Name}}ish", func() {
 		Expect(true).Should(BeTrue())
 	})
-
 })

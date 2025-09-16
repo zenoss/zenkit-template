@@ -14,7 +14,7 @@
 # any this material herein is strictly forbidden unless prior written
 # permission by an authorized officer is obtained from Zenoss Incorporated.
 #
-ARG ZENKIT_BUILD_VERSION=1.24.5
+ARG ZENKIT_BUILD_VERSION=1.25.1
 FROM gcr.io/zing-registry-188222/zenkit-build:${ZENKIT_BUILD_VERSION} AS builder
 
 ARG GOAMD64=v3

@@ -16,7 +16,7 @@
 #
 include .env
 
-SHELL                := /bin/bash
+SHELL                := $(shell command -v bash 2> /dev/null)
 GO                   := $(shell command -v go 2> /dev/null)
 GOLANGCI_LINT        := $(shell command -v golangci-lint 2> /dev/null)
 GOVULNCHECK          := $(shell command -v govulncheck 2> /dev/null)
@@ -26,7 +26,7 @@ GOCOVXML             := $(shell command -v gocov-xml 2> /dev/null)
 MOCKERY              := $(shell command -v mockery 2> /dev/null)
 DOCKER               := $(shell command -v docker 2> /dev/null)
 LOCAL_USER_ID        := $(shell id -u)
-ZENKIT_BUILD_VERSION := 1.24.5
+ZENKIT_BUILD_VERSION := 1.25.1
 BUILD_IMG            := gcr.io/zing-registry-188222/zenkit-build:$(ZENKIT_BUILD_VERSION)
 COVERAGE_DIR         := coverage
 DOCKER_PARAMS        := --rm \

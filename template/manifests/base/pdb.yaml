@@ -1,12 +1,12 @@
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{Name}}
+  name: "{{Name}}"
   labels:
-    app: {{Name}}
-    project: {{Name}}
+    app: "{{Name}}"
+    project: "{{Name}}"
 spec:
   minAvailable: 50%
   selector:
     matchLabels:
-      app: {{Name}}
+      app: "{{Name}}"
