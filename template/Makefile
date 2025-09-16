@@ -16,7 +16,7 @@
 #
 include .env
 
-SHELL                := /bin/bash
+SHELL                := $(shell command -v bash 2> /dev/null)
 GO                   := $(shell command -v go 2> /dev/null)
 GOLANGCI_LINT        := $(shell command -v golangci-lint 2> /dev/null)
 GOVULNCHECK          := $(shell command -v govulncheck 2> /dev/null)
