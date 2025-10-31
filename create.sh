@@ -2,7 +2,7 @@
 
 set -uo pipefail
 
-ZENKIT_BUILD_TAG="gcr.io/zing-registry-188222/zenkit-build:1.24.5"
+ZENKIT_BUILD_TAG="gcr.io/zing-registry-188222/zenkit-build:1.25.1"
 
 execute_template_in_docker() {
 	local path="$1"
