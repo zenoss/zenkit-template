@@ -91,7 +91,7 @@ unit-test: COVERAGE_XML     := $(COVERAGE_DIR)/coverage.xml
 unit-test:
 	@echo "$(M) ginkgo: running tests…"
 	@mkdir -p $(COVERAGE_DIR)
-	@$(GO) run github.com/onsi/ginkgo/v2/ginkgo \
+	@$(GO) tool ginkgo \
 		run \
 		-r \
 		--mod vendor \
