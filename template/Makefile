@@ -20,7 +20,6 @@ SHELL                := $(shell command -v bash 2> /dev/null)
 GO                   := $(shell command -v go 2> /dev/null)
 GOLANGCI_LINT        := $(shell command -v golangci-lint 2> /dev/null)
 GOVULNCHECK          := $(shell command -v govulncheck 2> /dev/null)
-GINKGO               := $(shell command -v ginkgo 2> /dev/null)
 GOCOV                := $(shell command -v gocov 2> /dev/null)
 GOCOVXML             := $(shell command -v gocov-xml 2> /dev/null)
 MOCKERY              := $(shell command -v mockery 2> /dev/null)
@@ -90,12 +89,9 @@ unit-test: COVERAGE_PROFILE := coverprofile.out
 unit-test: COVERAGE_HTML    := $(COVERAGE_DIR)/index.html
 unit-test: COVERAGE_XML     := $(COVERAGE_DIR)/coverage.xml
 unit-test:
-ifeq ($(strip $(GINKGO)),)
-	@echo "$(RED) Warning: ginkgo is not available on this system, please install it"
-else
 	@echo "$(M) ginkgo: running tests…"
 	@mkdir -p $(COVERAGE_DIR)
-	@$(GINKGO) \
+	@$(GO) tool ginkgo \
 		run \
 		-r \
 		--mod vendor \
@@ -107,7 +103,6 @@ else
 		--junit-report junit.xml
 	@$(GO) tool cover -html=$(COVERAGE_PROFILE) -o $(COVERAGE_HTML)
 	@$(GOCOV) convert $(COVERAGE_PROFILE) | $(GOCOVXML) > $(COVERAGE_XML)
-endif
 
 .PHONY: mocks
 mocks:
